@@ -120,21 +120,6 @@ biblitos/
 └── BIBLITOS_HandoffDoc.md
 ```
 
----
-
-## 💰 Cost Summary
-
-| Item | Cost |
-|---|---|
-| Godot 4 engine | $0 |
-| Art generation (Gemini) | $0 |
-| TTS audio — all 7 languages | ~$0.40 one-time |
-| Firebase Analytics | $0 |
-| Google Play Developer | $25 one-time |
-| Apple Developer | $99/yr |
-| **Total MVP** | **~$125** |
-
----
 
 ## 📄 Documentation
 
