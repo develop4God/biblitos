@@ -1,0 +1,134 @@
+[gd_scene load_steps=11 format=3 uid="uid://c8vwvj3yjxn6s"]
+
+[ext_resource type="Script" path="res://scenes/world_noah_exterior_storm.gd" id="1_8yvno"]
+[ext_resource type="Texture2D" uid="uid://bj4c0yqh8jf5w" path="res://assets/noah_ark/backgrounds/storm.png" id="2_storm"]
+[ext_resource type="Texture2D" uid="uid://d2uq3c4h5jf6x" path="res://assets/noah_ark/props/ark.png" id="3_ark"]
+[ext_resource type="Script" path="res://scripts/animals/animal.gd" id="4_animal"]
+[ext_resource type="Texture2D" uid="uid://c3vr4d5i6kg7y" path="res://assets/noah_ark/characters/noah.png" id="5_noah"]
+[ext_resource type="Texture2D" uid="uid://e4ws5e6j7lh8z" path="res://assets/noah_ark/characters/lion.png" id="6_lion"]
+[ext_resource type="Texture2D" uid="uid://f5xt6f7k8mi9a" path="res://assets/noah_ark/characters/elephant.png" id="7_elephant"]
+[ext_resource type="Texture2D" uid="uid://g6yu7g8l9nj0b" path="res://assets/noah_ark/characters/giraffe.png" id="8_giraffe"]
+[ext_resource type="Texture2D" uid="uid://h7zv8h9m0ok1c" path="res://assets/noah_ark/characters/dove.png" id="9_dove"]
+[ext_resource type="Texture2D" uid="uid://i8aw9i0n1pl2d" path="res://assets/noah_ark/characters/sheep.png" id="10_sheep"]
+
+[node name="WorldNoahExteriorStorm" type="Node2D"]
+script = ExtResource("1_8yvno")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("2_storm")
+centered = false
+
+[node name="Props" type="Node2D" parent="."]
+
+[node name="Ark" type="Area2D" parent="Props"]
+position = Vector2(400, 300)
+
+[node name="Sprite2D" type="Sprite2D" parent="Props/Ark"]
+texture = ExtResource("3_ark")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Props/Ark"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Props/Ark"]
+
+[node name="Characters" type="Node2D" parent="."]
+
+[node name="Noah" type="Area2D" parent="Characters"]
+position = Vector2(200, 400)
+script = ExtResource("4_animal")
+audio_key = "noah_verse"
+react_animation = "wave"
+idle_animation = "idle"
+is_draggable = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Characters/Noah"]
+texture = ExtResource("5_noah")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Noah"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Noah"]
+
+[node name="Lion" type="Area2D" parent="Characters"]
+position = Vector2(300, 400)
+script = ExtResource("4_animal")
+audio_key = "lion_verse"
+react_animation = "bounce"
+idle_animation = "idle"
+is_draggable = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Characters/Lion"]
+texture = ExtResource("6_lion")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Lion"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Lion"]
+
+[node name="Elephant" type="Area2D" parent="Characters"]
+position = Vector2(400, 400)
+script = ExtResource("4_animal")
+audio_key = "elephant_verse"
+react_animation = "wiggle"
+idle_animation = "idle"
+is_draggable = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Characters/Elephant"]
+texture = ExtResource("7_elephant")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Elephant"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Elephant"]
+
+[node name="Giraffe" type="Area2D" parent="Characters"]
+position = Vector2(500, 400)
+script = ExtResource("4_animal")
+audio_key = "giraffe_verse"
+react_animation = "stretch"
+idle_animation = "idle"
+is_draggable = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Characters/Giraffe"]
+texture = ExtResource("8_giraffe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Giraffe"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Giraffe"]
+
+[node name="Dove" type="Area2D" parent="Characters"]
+position = Vector2(600, 400)
+script = ExtResource("4_animal")
+audio_key = "dove_verse"
+react_animation = "fly"
+idle_animation = "idle"
+is_draggable = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Characters/Dove"]
+texture = ExtResource("9_dove")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Dove"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Dove"]
+
+[node name="Sheep" type="Area2D" parent="Characters"]
+position = Vector2(700, 400)
+script = ExtResource("4_animal")
+audio_key = "sheep_verse"
+react_animation = "hop"
+idle_animation = "idle"
+is_draggable = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Characters/Sheep"]
+texture = ExtResource("10_sheep")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Sheep"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Sheep"]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="LanguageButton" type="Button" parent="UI"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 80.0
+offset_bottom = 60.0
+text = "🌐"
+
+[node name="AudioPlayer" type="AudioStreamPlayer" parent="."]
