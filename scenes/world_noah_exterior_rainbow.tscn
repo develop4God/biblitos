@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://d9wxwk4zkyo7t"]
+[gd_scene load_steps=18 format=3]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ark"]
 size = Vector2(100, 100)
@@ -22,15 +22,15 @@ size = Vector2(50, 50)
 size = Vector2(50, 50)
 
 [ext_resource type="Script" path="res://scenes/world_noah_exterior_rainbow.gd" id="1_rainbow"]
-[ext_resource type="Texture2D" uid="uid://bk5d1zri9kg6x" path="res://assets/noah_ark/backgrounds/rainbow.png" id="2_rainbow"]
-[ext_resource type="Texture2D" uid="uid://d2uq3c4h5jf6x" path="res://assets/noah_ark/props/ark.png" id="3_ark"]
+[ext_resource type="Texture2D" path="res://assets/noah_ark/backgrounds/rainbow.png" id="2_rainbow"]
+[ext_resource type="Texture2D" path="res://assets/noah_ark/props/ark.png" id="3_ark"]
 [ext_resource type="Script" path="res://scripts/animals/animal.gd" id="4_animal"]
-[ext_resource type="Texture2D" uid="uid://c3vr4d5i6kg7y" path="res://assets/noah_ark/characters/noah.png" id="5_noah"]
-[ext_resource type="Texture2D" uid="uid://e4ws5e6j7lh8z" path="res://assets/noah_ark/characters/lion.png" id="6_lion"]
-[ext_resource type="Texture2D" uid="uid://f5xt6f7k8mi9a" path="res://assets/noah_ark/characters/elephant.png" id="7_elephant"]
-[ext_resource type="Texture2D" uid="uid://g6yu7g8l9nj0b" path="res://assets/noah_ark/characters/giraffe.png" id="8_giraffe"]
-[ext_resource type="Texture2D" uid="uid://h7zv8h9m0ok1c" path="res://assets/noah_ark/characters/dove.png" id="9_dove"]
-[ext_resource type="Texture2D" uid="uid://i8aw9i0n1pl2d" path="res://assets/noah_ark/characters/sheep.png" id="10_sheep"]
+[ext_resource type="Texture2D" path="res://assets/noah_ark/characters/noah.png" id="5_noah"]
+[ext_resource type="Texture2D" path="res://assets/noah_ark/characters/lion.png" id="6_lion"]
+[ext_resource type="Texture2D" path="res://assets/noah_ark/characters/elephant.png" id="7_elephant"]
+[ext_resource type="Texture2D" path="res://assets/noah_ark/characters/giraffe.png" id="8_giraffe"]
+[ext_resource type="Texture2D" path="res://assets/noah_ark/characters/dove.png" id="9_dove"]
+[ext_resource type="Texture2D" path="res://assets/noah_ark/characters/sheep.png" id="10_sheep"]
 
 [node name="WorldNoahExteriorRainbow" type="Node2D"]
 script = ExtResource("1_rainbow")

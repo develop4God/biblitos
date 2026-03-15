@@ -7,7 +7,7 @@ func _ready() -> void:
 func _on_language_button_pressed() -> void:
 	var languages := ["en", "es", "pt", "fr"]
 	var current := languages.find(LocaleManager.current_language)
-	var next := languages[(current + 1) % languages.size()]
+	var next: String = languages[(current + 1) % languages.size()]
 	LocaleManager.set_language(next)
 
 func _on_all_animals_placed() -> void:
