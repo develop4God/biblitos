@@ -5,6 +5,7 @@ part 'animal_config.freezed.dart';
 @freezed
 class AnimalConfig with _$AnimalConfig {
   const factory AnimalConfig({
+    required String animalKey,
     required String audioKey,
     required String spritePath,
     required String reactAnimation,
@@ -14,6 +15,7 @@ class AnimalConfig with _$AnimalConfig {
 }
 
 const kNoahConfig = AnimalConfig(
+  animalKey: 'noah',
   audioKey: 'noah_verse',
   spritePath: 'assets/noah_ark/characters/noah.png',
   reactAnimation: 'wave',
@@ -21,6 +23,7 @@ const kNoahConfig = AnimalConfig(
 );
 
 const kLionConfig = AnimalConfig(
+  animalKey: 'lion',
   audioKey: 'lion_verse',
   spritePath: 'assets/noah_ark/characters/lion.png',
   reactAnimation: 'bounce',
@@ -28,6 +31,7 @@ const kLionConfig = AnimalConfig(
 );
 
 const kElephantConfig = AnimalConfig(
+  animalKey: 'elephant',
   audioKey: 'elephant_verse',
   spritePath: 'assets/noah_ark/characters/elephant.png',
   reactAnimation: 'wiggle',
@@ -35,6 +39,7 @@ const kElephantConfig = AnimalConfig(
 );
 
 const kGiraffeConfig = AnimalConfig(
+  animalKey: 'giraffe',
   audioKey: 'giraffe_verse',
   spritePath: 'assets/noah_ark/characters/giraffe.png',
   reactAnimation: 'stretch',
@@ -42,6 +47,7 @@ const kGiraffeConfig = AnimalConfig(
 );
 
 const kDoveConfig = AnimalConfig(
+  animalKey: 'dove',
   audioKey: 'dove_verse',
   spritePath: 'assets/noah_ark/characters/dove.png',
   reactAnimation: 'fly',
@@ -49,6 +55,7 @@ const kDoveConfig = AnimalConfig(
 );
 
 const kSheepConfig = AnimalConfig(
+  animalKey: 'sheep',
   audioKey: 'sheep_verse',
   spritePath: 'assets/noah_ark/characters/sheep.png',
   reactAnimation: 'hop',

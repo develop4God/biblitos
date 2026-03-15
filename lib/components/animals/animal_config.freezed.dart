@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AnimalConfig {
+  String get animalKey => throw _privateConstructorUsedError;
   String get audioKey => throw _privateConstructorUsedError;
   String get spritePath => throw _privateConstructorUsedError;
   String get reactAnimation => throw _privateConstructorUsedError;
@@ -38,6 +39,7 @@ abstract class $AnimalConfigCopyWith<$Res> {
   ) = _$AnimalConfigCopyWithImpl<$Res, AnimalConfig>;
   @useResult
   $Res call({
+    String animalKey,
     String audioKey,
     String spritePath,
     String reactAnimation,
@@ -61,6 +63,7 @@ class _$AnimalConfigCopyWithImpl<$Res, $Val extends AnimalConfig>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? animalKey = null,
     Object? audioKey = null,
     Object? spritePath = null,
     Object? reactAnimation = null,
@@ -69,6 +72,10 @@ class _$AnimalConfigCopyWithImpl<$Res, $Val extends AnimalConfig>
   }) {
     return _then(
       _value.copyWith(
+            animalKey: null == animalKey
+                ? _value.animalKey
+                : animalKey // ignore: cast_nullable_to_non_nullable
+                      as String,
             audioKey: null == audioKey
                 ? _value.audioKey
                 : audioKey // ignore: cast_nullable_to_non_nullable
@@ -105,6 +112,7 @@ abstract class _$$AnimalConfigImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
+    String animalKey,
     String audioKey,
     String spritePath,
     String reactAnimation,
@@ -127,6 +135,7 @@ class __$$AnimalConfigImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? animalKey = null,
     Object? audioKey = null,
     Object? spritePath = null,
     Object? reactAnimation = null,
@@ -135,6 +144,10 @@ class __$$AnimalConfigImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$AnimalConfigImpl(
+        animalKey: null == animalKey
+            ? _value.animalKey
+            : animalKey // ignore: cast_nullable_to_non_nullable
+                  as String,
         audioKey: null == audioKey
             ? _value.audioKey
             : audioKey // ignore: cast_nullable_to_non_nullable
@@ -164,6 +177,7 @@ class __$$AnimalConfigImplCopyWithImpl<$Res>
 
 class _$AnimalConfigImpl implements _AnimalConfig {
   const _$AnimalConfigImpl({
+    required this.animalKey,
     required this.audioKey,
     required this.spritePath,
     required this.reactAnimation,
@@ -171,6 +185,8 @@ class _$AnimalConfigImpl implements _AnimalConfig {
     this.isDraggable = false,
   });
 
+  @override
+  final String animalKey;
   @override
   final String audioKey;
   @override
@@ -185,7 +201,7 @@ class _$AnimalConfigImpl implements _AnimalConfig {
 
   @override
   String toString() {
-    return 'AnimalConfig(audioKey: $audioKey, spritePath: $spritePath, reactAnimation: $reactAnimation, idleAnimation: $idleAnimation, isDraggable: $isDraggable)';
+    return 'AnimalConfig(animalKey: $animalKey, audioKey: $audioKey, spritePath: $spritePath, reactAnimation: $reactAnimation, idleAnimation: $idleAnimation, isDraggable: $isDraggable)';
   }
 
   @override
@@ -193,6 +209,8 @@ class _$AnimalConfigImpl implements _AnimalConfig {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AnimalConfigImpl &&
+            (identical(other.animalKey, animalKey) ||
+                other.animalKey == animalKey) &&
             (identical(other.audioKey, audioKey) ||
                 other.audioKey == audioKey) &&
             (identical(other.spritePath, spritePath) ||
@@ -208,6 +226,7 @@ class _$AnimalConfigImpl implements _AnimalConfig {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    animalKey,
     audioKey,
     spritePath,
     reactAnimation,
@@ -226,6 +245,7 @@ class _$AnimalConfigImpl implements _AnimalConfig {
 
 abstract class _AnimalConfig implements AnimalConfig {
   const factory _AnimalConfig({
+    required final String animalKey,
     required final String audioKey,
     required final String spritePath,
     required final String reactAnimation,
@@ -233,6 +253,8 @@ abstract class _AnimalConfig implements AnimalConfig {
     final bool isDraggable,
   }) = _$AnimalConfigImpl;
 
+  @override
+  String get animalKey;
   @override
   String get audioKey;
   @override
