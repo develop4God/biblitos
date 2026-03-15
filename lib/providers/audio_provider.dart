@@ -14,4 +14,3 @@ extension AudioServiceX on AudioService {
   Future<void> playSfx(String sfxKey) =>
       play('assets/audio/en/sfx/$sfxKey.mp3');
 }
-

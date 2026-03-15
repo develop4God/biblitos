@@ -9,9 +9,5 @@ void main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  runApp(
-    const ProviderScope(
-      child: BiblitosApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: BiblitosApp()));
 }

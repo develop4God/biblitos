@@ -23,4 +23,3 @@ class AnimalComponent extends SpriteComponent with TapCallbacks {
     onTapped(config.audioKey, config.reactAnimation);
   }
 }
-

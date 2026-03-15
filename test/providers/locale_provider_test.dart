@@ -38,11 +38,8 @@ void main() {
 
     test('buildSfxPath always resolves to en/sfx/', () {
       container.read(localeProvider.notifier).setLanguage('fr');
-      final path = container
-          .read(localeProvider.notifier)
-          .buildSfxPath('rain');
+      final path = container.read(localeProvider.notifier).buildSfxPath('rain');
       expect(path, 'assets/audio/en/sfx/rain.mp3');
     });
   });
 }
-

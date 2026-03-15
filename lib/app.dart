@@ -6,17 +6,11 @@ class BiblitosApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Biblitos',
       theme: ThemeData(useMaterial3: true),
-      home: Scaffold(
-        body: GameWidget(
-          game: FlameGame(),
-        ),
-      ),
+      home: Scaffold(body: GameWidget(game: FlameGame())),
     );
   }
 }
-

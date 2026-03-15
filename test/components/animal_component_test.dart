@@ -27,7 +27,10 @@ void main() {
       expect(component.config.reactAnimation, 'bounce');
 
       // Manually invoke the callback (simulating onTapDown)
-      component.onTapped(component.config.audioKey, component.config.reactAnimation);
+      component.onTapped(
+        component.config.audioKey,
+        component.config.reactAnimation,
+      );
 
       expect(callbackWasCalled, true);
       expect(capturedKey, 'lion_verse');
@@ -35,11 +38,7 @@ void main() {
     });
 
     test('works with different animal configs', () {
-      final configs = [
-        kElephantConfig,
-        kGiraffeConfig,
-        kDoveConfig,
-      ];
+      final configs = [kElephantConfig, kGiraffeConfig, kDoveConfig];
 
       for (final config in configs) {
         late String key;
@@ -63,4 +62,3 @@ void main() {
     });
   });
 }
-

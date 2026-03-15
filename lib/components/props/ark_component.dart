@@ -20,4 +20,3 @@ class ArkComponent extends SpriteComponent with TapCallbacks {
     onTapped();
   }
 }
-

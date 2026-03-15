@@ -13,15 +13,11 @@ class LocaleNotifier extends StateNotifier<String> {
     }
   }
 
-  String buildPath(String audioKey) =>
-      '$kAudioBasePath$state/$audioKey.mp3';
+  String buildPath(String audioKey) => '$kAudioBasePath$state/$audioKey.mp3';
 
-  String buildSfxPath(String sfxKey) =>
-      '${kAudioBasePath}en/sfx/$sfxKey.mp3';
+  String buildSfxPath(String sfxKey) => '${kAudioBasePath}en/sfx/$sfxKey.mp3';
 }
 
-final localeProvider =
-    StateNotifierProvider<LocaleNotifier, String>(
+final localeProvider = StateNotifierProvider<LocaleNotifier, String>(
   (ref) => LocaleNotifier(),
 );
-
