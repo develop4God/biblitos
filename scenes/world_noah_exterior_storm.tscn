@@ -1,4 +1,25 @@
-[gd_scene load_steps=11 format=3 uid="uid://c8vwvj3yjxn6s"]
+[gd_scene load_steps=18 format=3 uid="uid://c8vwvj3yjxn6s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ark"]
+size = Vector2(100, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_noah"]
+size = Vector2(50, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lion"]
+size = Vector2(50, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_elephant"]
+size = Vector2(50, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_giraffe"]
+size = Vector2(50, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dove"]
+size = Vector2(50, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sheep"]
+size = Vector2(50, 50)
 
 [ext_resource type="Script" path="res://scenes/world_noah_exterior_storm.gd" id="1_8yvno"]
 [ext_resource type="Texture2D" uid="uid://bj4c0yqh8jf5w" path="res://assets/noah_ark/backgrounds/storm.png" id="2_storm"]
@@ -21,18 +42,21 @@ centered = false
 [node name="Props" type="Node2D" parent="."]
 
 [node name="Ark" type="Area2D" parent="Props"]
+input_pickable = true
 position = Vector2(400, 300)
 
 [node name="Sprite2D" type="Sprite2D" parent="Props/Ark"]
 texture = ExtResource("3_ark")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Props/Ark"]
+shape = SubResource("RectangleShape2D_ark")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Props/Ark"]
 
 [node name="Characters" type="Node2D" parent="."]
 
 [node name="Noah" type="Area2D" parent="Characters"]
+input_pickable = true
 position = Vector2(200, 400)
 script = ExtResource("4_animal")
 audio_key = "noah_verse"
@@ -44,10 +68,12 @@ is_draggable = false
 texture = ExtResource("5_noah")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Noah"]
+shape = SubResource("RectangleShape2D_noah")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Noah"]
 
 [node name="Lion" type="Area2D" parent="Characters"]
+input_pickable = true
 position = Vector2(300, 400)
 script = ExtResource("4_animal")
 audio_key = "lion_verse"
@@ -59,10 +85,12 @@ is_draggable = false
 texture = ExtResource("6_lion")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Lion"]
+shape = SubResource("RectangleShape2D_lion")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Lion"]
 
 [node name="Elephant" type="Area2D" parent="Characters"]
+input_pickable = true
 position = Vector2(400, 400)
 script = ExtResource("4_animal")
 audio_key = "elephant_verse"
@@ -74,10 +102,12 @@ is_draggable = false
 texture = ExtResource("7_elephant")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Elephant"]
+shape = SubResource("RectangleShape2D_elephant")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Elephant"]
 
 [node name="Giraffe" type="Area2D" parent="Characters"]
+input_pickable = true
 position = Vector2(500, 400)
 script = ExtResource("4_animal")
 audio_key = "giraffe_verse"
@@ -89,10 +119,12 @@ is_draggable = false
 texture = ExtResource("8_giraffe")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Giraffe"]
+shape = SubResource("RectangleShape2D_giraffe")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Giraffe"]
 
 [node name="Dove" type="Area2D" parent="Characters"]
+input_pickable = true
 position = Vector2(600, 400)
 script = ExtResource("4_animal")
 audio_key = "dove_verse"
@@ -104,10 +136,12 @@ is_draggable = false
 texture = ExtResource("9_dove")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Dove"]
+shape = SubResource("RectangleShape2D_dove")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Dove"]
 
 [node name="Sheep" type="Area2D" parent="Characters"]
+input_pickable = true
 position = Vector2(700, 400)
 script = ExtResource("4_animal")
 audio_key = "sheep_verse"
@@ -119,6 +153,7 @@ is_draggable = false
 texture = ExtResource("10_sheep")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Sheep"]
+shape = SubResource("RectangleShape2D_sheep")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Sheep"]
 
