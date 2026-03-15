@@ -1,5 +1,5 @@
 # ⛵ Biblitos — Architecture Document
-**Version 1.0 — March 2026**  
+**Version 1.1 — March 2026**  
 **Status: Active Constitution — no .gd file is written without conforming to this document.**
 
 ---
@@ -65,14 +65,14 @@ This is how DIP is expressed at the node level. Nodes declare *what they need* v
 ### The Pattern
 
 ```gdscript
-# ✅ CORRECT — Lion.gd
-class_name Lion
-extends Animal
+# ✅ CORRECT — animal.gd (base class, no class_name)
+extends Area2D
 
 # Configured in the Inspector per scene — no hardcoding
-@export var audio_key: String = "lion_verse"
-@export var react_animation: String = "bounce"
-@export var idle_animation: String = "breathe"
+@export var audio_key: String = ""
+@export var react_animation: String = "react"
+@export var idle_animation: String = "idle"
+@export var is_draggable: bool = false
 ```
 
 The Inspector is the injection point. The agent sets the values in `.tscn`. The script never knows which animal it is — only what to request.
@@ -81,7 +81,7 @@ The Inspector is the injection point. The agent sets the values in `.tscn`. The 
 
 | Location | Pattern | Verdict |
 |---|---|---|
-| Node calling Autoload | `AudioManager.play(audio_key, LocaleManager.current_language)` | ✅ Correct |
+| Node calling Autoload | `AudioManager.play(audio_key)` | ✅ Correct |
 | Node using `@export` for configuration | `@export var audio_key: String` | ✅ Correct |
 | Node instantiating another node | `var lion = Lion.new()` inside a script | ❌ Hard block |
 | Autoload holding node reference | `var _lion_node: Lion` inside `AudioManager` | ❌ Hard block |
@@ -96,13 +96,12 @@ All interactive characters extend this base class. **`Animal.gd` is never modifi
 
 ```gdscript
 # res://scripts/animals/animal.gd
-class_name Animal
 extends Area2D
 
-@export var audio_key: String          # e.g. "lion_verse"
-@export var react_animation: String    # e.g. "bounce"
-@export var idle_animation: String     # e.g. "breathe"
-@export var is_draggable: bool = false # Path B animals only
+@export var audio_key: String = ""        # e.g. "lion_verse"
+@export var react_animation: String = "react"
+@export var idle_animation: String = "idle"
+@export var is_draggable: bool = false    # Path B animals only
 
 func _ready() -> void:
     $AnimationPlayer.play(idle_animation)
@@ -112,7 +111,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
         _react()
 
 func _react() -> void:
-    AudioManager.play(audio_key, LocaleManager.current_language)
+    AudioManager.play(audio_key)
     $AnimationPlayer.play(react_animation)
 ```
 
@@ -146,11 +145,11 @@ assets/
     │       ├── waves.mp3
     │       └── rainbow_music.mp3
     ├── es/
-    │   └── (same filenames)
+    │   └── (same filenames, no sfx subfolder)
     ├── pt/
-    │   └── (same filenames)
+    │   └── (same filenames, no sfx subfolder)
     └── fr/
-        └── (same filenames)
+        └── (same filenames, no sfx subfolder)
 ```
 
 ### Naming Contract
@@ -228,18 +227,20 @@ biblitos/
 │   └── workflows/
 │       └── copilot-setup-steps.yml
 ├── assets/
-│   ├── characters/
-│   │   ├── noah.png
-│   │   ├── lion.png
-│   │   ├── elephant.png
-│   │   ├── giraffe.png
-│   │   ├── dove.png
-│   │   └── sheep.png
-│   ├── backgrounds/
-│   │   ├── storm.png
-│   │   └── rainbow.png
-│   ├── props/
-│   │   └── ark.png
+│   ├── noah_ark/                          ← World 1 assets
+│   │   ├── characters/
+│   │   │   ├── noah.png
+│   │   │   ├── lion.png
+│   │   │   ├── elephant.png
+│   │   │   ├── giraffe.png
+│   │   │   ├── dove.png
+│   │   │   └── sheep.png
+│   │   ├── backgrounds/
+│   │   │   ├── storm.png
+│   │   │   └── rainbow.png
+│   │   └── props/
+│   │       └── ark.png
+│   ├── bethlehem/                         ← World 2 (Phase 2)
 │   └── audio/
 │       ├── en/
 │       │   └── sfx/
@@ -267,6 +268,7 @@ biblitos/
 ├── pipeline/
 │   └── generate_audio.py
 ├── project.godot
+├── icon.svg
 ├── README.md
 ├── BIBLITOS_Architecture.md               ← this file
 ├── BIBLITOS_MasterPlan.md
@@ -317,7 +319,7 @@ func _react() -> void:
 
 # AFTER — animal.gd _react()
 func _react() -> void:
-    AudioManager.play(audio_key, LocaleManager.current_language)
+    AudioManager.play(audio_key)
     $AnimationPlayer.play(react_animation)
 ```
 
@@ -336,7 +338,7 @@ Exact sequence of observable events at runtime. Serves as acceptance criteria wi
 
 ```
 Expected: child taps elephant →
-  1. react animation plays ("bounce")
+  1. react animation plays ("wiggle")
   2. AudioManager loads res://assets/audio/en/elephant_verse.mp3
   3. Audio plays warm voice: "God saw that it was good"
   4. idle animation resumes after react completes
@@ -358,6 +360,8 @@ Non-negotiable. If any of these are found in a PR or agent output — reject imm
 | 6 | Business logic inside a scene script (`.tscn`-attached root script) |
 | 7 | New Autoload added without registering in this document first |
 | 8 | Animal added by modifying `Animal.gd` instead of extending it |
+| 9 | Asset path using old structure: `res://assets/characters/` or `res://assets/backgrounds/` |
+| 10 | Animal scene missing `AnimationPlayer` as direct child named exactly `AnimationPlayer` |
 
 ---
 
