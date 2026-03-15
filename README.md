@@ -1,2 +1,2 @@
 # biblitos
-Bible game for kids creative like no other 
+Bible game for kids, creative like no other 
