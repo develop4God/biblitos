@@ -58,7 +58,7 @@ class NoahExteriorStormWorld extends FlameGame {
                 .placeAnimal(config.animalKey);
           },
           position: position,
-          size: Vector2(size.x * 0.10, size.y * 0.15),
+          size: Vector2(size.y * 0.40 * 0.667, size.y * 0.40),
         ),
       );
     }
