@@ -37,9 +37,23 @@ class NoahExteriorStormWorld extends FlameGame {
     );
     debugPrint("🌍 Ark added at ${Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio)}");
 
-    // All 6 animals — positions relative to canvas size
+    // Noah — human character, larger than animals
+    await add(AnimalComponent(
+      config: kNoahConfig,
+      onTapped: (audioKey, _) {
+        final language = _container.read(localeProvider);
+        _container.read(audioProvider).playVerse(audioKey, language);
+        _container.read(gameStateProvider.notifier).placeAnimal(kNoahConfig.animalKey);
+      },
+      position: Vector2(size.x * 0.60, size.y * 0.65),
+      size: Vector2(
+        size.y * NoahArkLayout.noahHeightRatio * NoahArkLayout.noahAspectRatio,
+        size.y * NoahArkLayout.noahHeightRatio,
+      ),
+    ));
+
+    // Animals — uniform size
     final animalEntries = [
-      (kNoahConfig, Vector2(size.x * 0.60, size.y * 0.65)),
       (kLionConfig, Vector2(size.x * 0.33, size.y * 0.75)),
       (kElephantConfig, Vector2(size.x * 0.18, size.y * 0.88)),
       (kGiraffeConfig, Vector2(size.x * 0.52, size.y * 0.20)),
