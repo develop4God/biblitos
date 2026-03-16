@@ -23,27 +23,27 @@ class NoahExteriorStormWorld extends FlameGame {
     // Background — full screen storm
     await add(BackgroundComponent(type: BackgroundType.storm, size: size));
 
-    // Ark — centered, y: 320
+    // Ark — centered, proportional to canvas
     await add(
       ArkComponent(
         onTapped: () {
           final language = _container.read(localeProvider);
           _container.read(audioProvider).playVerse('noah_greeting', language);
         },
-        position: Vector2(760, 320),
-        size: Vector2(200, 200),
+        position: Vector2(size.x * 0.44, size.y * 0.45),
+        size: Vector2(size.x * 0.25, size.y * 0.55),
       ),
     );
-    debugPrint('🌍 Ark added at ${Vector2(760, 320)}');
+    debugPrint('🌍 Ark added at ${Vector2(size.x * 0.44, size.y * 0.45)}');
 
-    // All 6 animals — positions from Architecture doc Section 8
+    // All 6 animals — positions relative to canvas size
     final animalEntries = [
-      (kNoahConfig, Vector2(1050, 450)),
-      (kLionConfig, Vector2(580, 560)),
-      (kElephantConfig, Vector2(320, 650)),
-      (kGiraffeConfig, Vector2(900, 260)),
-      (kDoveConfig, Vector2(900, 150)),
-      (kSheepConfig, Vector2(1250, 620)),
+      (kNoahConfig, Vector2(size.x * 0.60, size.y * 0.65)),
+      (kLionConfig, Vector2(size.x * 0.33, size.y * 0.75)),
+      (kElephantConfig, Vector2(size.x * 0.18, size.y * 0.88)),
+      (kGiraffeConfig, Vector2(size.x * 0.52, size.y * 0.20)),
+      (kDoveConfig, Vector2(size.x * 0.52, size.y * 0.15)),
+      (kSheepConfig, Vector2(size.x * 0.72, size.y * 0.82)),
     ];
 
     for (final (config, position) in animalEntries) {
@@ -58,7 +58,7 @@ class NoahExteriorStormWorld extends FlameGame {
                 .placeAnimal(config.animalKey);
           },
           position: position,
-          size: Vector2(150, 150),
+          size: Vector2(size.x * 0.10, size.y * 0.15),
         ),
       );
     }
