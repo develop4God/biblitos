@@ -2,6 +2,7 @@ import 'package:biblitos/components/animals/animal_component.dart';
 import 'package:biblitos/components/animals/animal_config.dart';
 import 'package:biblitos/components/backgrounds/background_component.dart';
 import 'package:biblitos/components/props/ark_component.dart';
+import 'package:biblitos/config/noah_ark_layout.dart';
 import 'package:biblitos/providers/audio_provider.dart';
 import 'package:biblitos/providers/game_state_provider.dart';
 import 'package:biblitos/providers/locale_provider.dart';
@@ -23,18 +24,18 @@ class NoahExteriorStormWorld extends FlameGame {
     // Background — full screen storm
     await add(BackgroundComponent(type: BackgroundType.storm, size: size));
 
-    // Ark — centered, proportional to canvas
+    // Ark — positioned from layout config
     await add(
       ArkComponent(
         onTapped: () {
           final language = _container.read(localeProvider);
           _container.read(audioProvider).playVerse('noah_greeting', language);
         },
-        position: Vector2(size.x * 0.15, size.y * 0.08),
-        size: Vector2(size.x * 0.70, size.y * 0.95),
+        position: Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio),
+        size: Vector2(size.x * NoahArkLayout.arkWidthRatio, size.y * NoahArkLayout.arkHeightRatio),
       ),
     );
-    debugPrint('🌍 Ark added at ${Vector2(size.x * 0.44, size.y * 0.45)}');
+    debugPrint("🌍 Ark added at ${Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio)}");
 
     // All 6 animals — positions relative to canvas size
     final animalEntries = [
@@ -58,7 +59,10 @@ class NoahExteriorStormWorld extends FlameGame {
                 .placeAnimal(config.animalKey);
           },
           position: position,
-          size: Vector2(size.y * 0.40 * 0.667, size.y * 0.40),
+          size: Vector2(
+            size.y * NoahArkLayout.animalHeightRatio * NoahArkLayout.animalAspectRatio,
+            size.y * NoahArkLayout.animalHeightRatio,
+          ),
         ),
       );
     }
