@@ -12,7 +12,7 @@ class ArkComponent extends SpriteComponent with TapCallbacks {
 
   @override
   Future<void> onLoad() async {
-    sprite = await Sprite.load('assets/noah_ark/props/ark.png');
+    sprite = await Sprite.load('noah_ark/props/ark.png');
   }
 
   @override

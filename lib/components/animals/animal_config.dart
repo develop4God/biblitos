@@ -17,7 +17,7 @@ class AnimalConfig with _$AnimalConfig {
 const kNoahConfig = AnimalConfig(
   animalKey: 'noah',
   audioKey: 'noah_verse',
-  spritePath: 'assets/noah_ark/characters/noah.png',
+  spritePath: 'noah_ark/characters/noah.png',
   reactAnimation: 'wave',
   idleAnimation: 'idle',
 );
@@ -25,7 +25,7 @@ const kNoahConfig = AnimalConfig(
 const kLionConfig = AnimalConfig(
   animalKey: 'lion',
   audioKey: 'lion_verse',
-  spritePath: 'assets/noah_ark/characters/lion.png',
+  spritePath: 'noah_ark/characters/lion.png',
   reactAnimation: 'bounce',
   idleAnimation: 'idle',
 );
@@ -33,7 +33,7 @@ const kLionConfig = AnimalConfig(
 const kElephantConfig = AnimalConfig(
   animalKey: 'elephant',
   audioKey: 'elephant_verse',
-  spritePath: 'assets/noah_ark/characters/elephant.png',
+  spritePath: 'noah_ark/characters/elephant.png',
   reactAnimation: 'wiggle',
   idleAnimation: 'idle',
 );
@@ -41,7 +41,7 @@ const kElephantConfig = AnimalConfig(
 const kGiraffeConfig = AnimalConfig(
   animalKey: 'giraffe',
   audioKey: 'giraffe_verse',
-  spritePath: 'assets/noah_ark/characters/giraffe.png',
+  spritePath: 'noah_ark/characters/giraffe.png',
   reactAnimation: 'stretch',
   idleAnimation: 'idle',
 );
@@ -49,7 +49,7 @@ const kGiraffeConfig = AnimalConfig(
 const kDoveConfig = AnimalConfig(
   animalKey: 'dove',
   audioKey: 'dove_verse',
-  spritePath: 'assets/noah_ark/characters/dove.png',
+  spritePath: 'noah_ark/characters/dove.png',
   reactAnimation: 'fly',
   idleAnimation: 'idle',
 );
@@ -57,7 +57,7 @@ const kDoveConfig = AnimalConfig(
 const kSheepConfig = AnimalConfig(
   animalKey: 'sheep',
   audioKey: 'sheep_verse',
-  spritePath: 'assets/noah_ark/characters/sheep.png',
+  spritePath: 'noah_ark/characters/sheep.png',
   reactAnimation: 'hop',
   idleAnimation: 'idle',
 );
