@@ -31,7 +31,7 @@ class NoahExteriorStormWorld extends FlameGame {
           _container.read(audioProvider).playVerse('noah_greeting', language);
         },
         position: Vector2(size.x * 0.44, size.y * 0.45),
-        size: Vector2(size.x * 0.25, size.y * 0.55),
+        size: Vector2(size.x * 0.50, size.y * 0.80),
       ),
     );
     debugPrint('🌍 Ark added at ${Vector2(size.x * 0.44, size.y * 0.45)}');
