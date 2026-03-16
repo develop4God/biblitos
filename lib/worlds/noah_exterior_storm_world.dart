@@ -6,6 +6,7 @@ import 'package:biblitos/providers/audio_provider.dart';
 import 'package:biblitos/providers/game_state_provider.dart';
 import 'package:biblitos/providers/locale_provider.dart';
 import 'package:flame/game.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NoahExteriorStormWorld extends FlameGame {
@@ -17,6 +18,7 @@ class NoahExteriorStormWorld extends FlameGame {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    debugPrint('🌍 Storm world onLoad — size: $size');
 
     // Background — full screen storm
     await add(BackgroundComponent(type: BackgroundType.storm, size: size));
@@ -32,6 +34,7 @@ class NoahExteriorStormWorld extends FlameGame {
         size: Vector2(200, 200),
       ),
     );
+    debugPrint('🌍 Ark added at ${Vector2(760, 320)}');
 
     // All 6 animals — positions from Architecture doc Section 8
     final animalEntries = [

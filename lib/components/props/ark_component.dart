@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flutter/material.dart';
 
 class ArkComponent extends SpriteComponent with TapCallbacks {
   final void Function() onTapped;
@@ -12,7 +13,9 @@ class ArkComponent extends SpriteComponent with TapCallbacks {
 
   @override
   Future<void> onLoad() async {
+    debugPrint('🧩 ArkComponent loading sprite');
     sprite = await Sprite.load('noah_ark/props/ark.png');
+    debugPrint('🧩 ArkComponent sprite loaded — size: $size');
   }
 
   @override
