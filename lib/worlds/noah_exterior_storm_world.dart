@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:biblitos/components/animals/animal_component.dart';
 import 'package:biblitos/components/animals/animal_config.dart';
 import 'package:biblitos/components/backgrounds/background_component.dart';
@@ -12,14 +14,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NoahExteriorStormWorld extends FlameGame {
   final ProviderContainer _container;
+  bool _sceneBuilt = false;
 
   NoahExteriorStormWorld({required ProviderContainer container})
     : _container = container;
 
   @override
-  Future<void> onLoad() async {
-    await super.onLoad();
-    debugPrint('🌍 Storm world onLoad — size: $size');
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    // The orientation lock request in main.dart lands asynchronously, so the
+    // first resize (and sometimes onLoad) can still report the pre-rotation
+    // portrait size. Wait for a landscape size before building the scene.
+    if (!_sceneBuilt && size.x > size.y) {
+      _sceneBuilt = true;
+      unawaited(_buildScene());
+    }
+  }
+
+  Future<void> _buildScene() async {
+    debugPrint('🌍 Storm world building scene — size: $size');
 
     // Background — full screen storm
     await add(BackgroundComponent(type: BackgroundType.storm, size: size));
