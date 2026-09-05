@@ -427,10 +427,14 @@ Update this section at the end of every session — it is the in-repo source of 
 Layer 1 — Foundation     ✅  pubspec, main.dart, app.dart, animal_config.dart
 Layer 2 — Providers      ✅  locale, audio, game_state, sky — provider tests passing
 Layer 3 — Components     ✅  AnimalComponent, ArkComponent, BackgroundComponent — tests passing
-Layer 4 — Worlds         ⏳  storm world: real game loop now (§14) — tap-to-hear-verse,
+                              + juice pass: idle animations (ark rocking, animal breathe/pulse),
+                                varied tap-feedback effects (cycles 3 distinct effects per tap),
+                                drag-hint glow on draggable animals (clears on successful board)
+Layer 4 — Worlds         ⏳  storm world: real game loop (§14) — tap-to-hear-verse,
                                 drag-to-board-the-ark with reactAnimation + boarding sound,
                                 completion celebration when all 6 board, sky toggle,
-                                flame_riverpod migrated
+                                flame_riverpod migrated, day/night ambient audio layer wired
+                                (ducks under verse playback via AudioService.playDucked)
                               rainbow world — NOT started, but rainbow.png background asset exists,
                                 unblocked, buildable now by reusing the same tap/drag pattern
                               interior world — NOT started, blocked: no interior background asset yet
@@ -439,9 +443,18 @@ Layer 5 — Interactivity  ⏳  main_menu, language_button — not started
                                 is the reference implementation for future Worlds)
 Layer 6 — Audio Pipeline ⏳  BLOCKED — assets/audio/{en,es,pt,fr}/ contain only .gitkeep placeholders,
                               no real audio files yet; generate_audio.py pipeline not yet run.
-                              Also needs 2 new sfx keys once real audio exists: 'boarded' and
-                              'all_aboard' (referenced in code today, silently no-op until
-                              real files land — see AudioService's caught-error behavior)
+                              Code-complete and silent-safe: 'boarded', 'all_aboard',
+                              'ambient_day', 'ambient_night' sfx keys are all wired (see
+                              AudioService.playAmbient/playDucked), no-op until real files land.
+                              OPEN DECISION: switch asset extension from .mp3 to .m4a (AAC) before
+                              sourcing real files — MP3 encoder gap-padding breaks seamless looping,
+                              which the ambient bed specifically needs; AAC has correct gapless
+                              support and native iOS/Android decode. Not yet implemented.
+                              Ambient bed (day: birds/wind, night: calm waves/wind, NO thunder per
+                              CEO review fear-risk) still needs a real child/parent listen-test
+                              before merge once real assets exist — this environment's network
+                              proxy blocks Pixabay/Mixkit/Freesound, so real files must be sourced
+                              and supplied by the user, not downloaded in-session.
 Layer 7 — Launch Polish  ⏳  icon, Firebase, Android + iOS export — not started
 ```
 
@@ -450,10 +463,14 @@ Layer 7 — Launch Polish  ⏳  icon, Firebase, Android + iOS export — not sta
 - **Gate 2** — Child taps animal, hears Scripture → family test → App Store
 
 ### Last completed (this session)
-Merged `feature/flame-riverpod-migration` to `main` (PR #6) — Gate 1 is now satisfied. Ran the full quality-gate suite on `main`: `dart format` (0 changed), `dart analyze --fatal-infos` (0 issues), `dart fix --apply` (nothing to fix), `flutter test` (44/44 passing). Repo is clean; only `main` and the active session branch remain on the remote.
+Ran a CEO review + eng-planning pass on the "screen reads as static images" gap the founder flagged, producing two approved, delegated, and shipped units on `claude/repo-quality-gates-assessment-wj4e9g` (PR #7, open against `main`): (1) a Juice Pass adding idle animations, varied tap feedback, and drag-hint glow to the storm world (commit `3b5483a`) and (2) a day/night ambient sound layer wired to the existing `SkyNotifier` signal, with verse audio ducking the ambient bed via `AudioService.playDucked`'s try/finally-guarded restore (commit `ec87de8`). Both are code-complete, fully tested (59/59 passing), and silent-safe pending real audio assets. Thunder was explicitly excluded from the ambient design per the CEO review's fear-risk finding. Identified that MP3 is the wrong target format for the ambient loops specifically (encoder gap padding breaks gapless looping) — AAC/M4A recommended instead, not yet implemented in code.
 
 ### Recommended next step
-Manual device/emulator verification of the drag-to-board loop (tap → verse, drag onto ark → animation + sound + placement, all 6 → Noah celebrates) is still outstanding — only verified via unit/widget tests so far, no real device available in this environment. After that: rainbow world (Layer 4) is the next highest-leverage unblocked work, applying the same tap/drag pattern §14 documents as the template. Layer 6 (Audio) remains blocked on real audio assets regardless of code work — the 'boarded'/'all_aboard' sfx keys are wired but silent until real files exist.
+1. Source real ambient/sfx audio (day: birds+wind, night: calm waves+wind, boarded/all_aboard chimes) — must be supplied by the user, since this session's network proxy blocks the audio CDNs researched (Pixabay, Mixkit, Freesound) and cannot download them directly.
+2. Before adding those assets, switch `AudioService`/`audio_provider.dart` path extensions from `.mp3` to `.m4a` (AAC) — small, mechanical change, no logic change.
+3. Real child/parent listen-test on the ambient bed for cozy-vs-scary before merging PR #7.
+4. Manual device/emulator verification of the drag-to-board loop is still outstanding (only unit/widget-tested so far).
+5. After the above: rainbow world (Layer 4) is the next highest-leverage unblocked work, reusing §14's tap/drag pattern.
 
 ---
 
