@@ -17,13 +17,14 @@ class GameCanvas extends StatefulWidget {
 
 class _GameCanvasState extends State<GameCanvas> {
   final NoahExteriorStormWorld _game = NoahExteriorStormWorld();
+  final _gameWidgetKey = GlobalKey<RiverpodAwareGameWidgetState>();
 
   @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
         ref.watch(skyProvider);
-        return RiverpodAwareGameWidget(game: _game);
+        return RiverpodAwareGameWidget(key: _gameWidgetKey, game: _game);
       },
     );
   }

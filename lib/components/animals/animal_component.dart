@@ -4,8 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/foundation.dart';
 
-class AnimalComponent extends SpriteComponent
-    with TapCallbacks, DragCallbacks {
+class AnimalComponent extends SpriteComponent with TapCallbacks, DragCallbacks {
   final AnimalConfig config;
   final void Function(String audioKey, String reactAnimation) onTapped;
 
@@ -39,4 +38,3 @@ class AnimalComponent extends SpriteComponent
     logDropPositionRatio(config.animalKey, this);
   }
 }
-

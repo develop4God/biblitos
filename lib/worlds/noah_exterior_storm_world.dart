@@ -4,11 +4,11 @@ import 'package:biblitos/components/animals/animal_component.dart';
 import 'package:biblitos/components/animals/animal_config.dart';
 import 'package:biblitos/components/backgrounds/background_component.dart';
 import 'package:biblitos/components/props/ark_component.dart';
+import 'package:biblitos/components/sky_sync_component.dart';
 import 'package:biblitos/config/noah_ark_layout.dart';
 import 'package:biblitos/providers/audio_provider.dart';
 import 'package:biblitos/providers/game_state_provider.dart';
 import 'package:biblitos/providers/locale_provider.dart';
-import 'package:biblitos/providers/sky_provider.dart';
 import 'package:flame/game.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +26,16 @@ class NoahExteriorStormWorld extends FlameGame with RiverpodGameMixin {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    _skyColor = ref.read(skyProvider) ? _nightSkyColor : _daySkyColor;
-    ref.listen<bool>(skyProvider, (previous, isNight) {
-      _skyColor = isNight ? _nightSkyColor : _daySkyColor;
-      debugPrint('🌗 world sky updated — isNight: $isNight, color: $_skyColor');
-    });
+    await add(
+      SkySyncComponent(
+        onSkyChanged: (isNight) {
+          _skyColor = isNight ? _nightSkyColor : _daySkyColor;
+          debugPrint(
+            '🌗 world sky updated — isNight: $isNight, color: $_skyColor',
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -58,26 +63,40 @@ class NoahExteriorStormWorld extends FlameGame with RiverpodGameMixin {
           final language = ref.read(localeProvider);
           ref.read(audioProvider).playVerse('noah_greeting', language);
         },
-        position: Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio),
-        size: Vector2(size.x * NoahArkLayout.arkWidthRatio, size.y * NoahArkLayout.arkHeightRatio),
+        position: Vector2(
+          size.x * NoahArkLayout.arkPosXRatio,
+          size.y * NoahArkLayout.arkPosYRatio,
+        ),
+        size: Vector2(
+          size.x * NoahArkLayout.arkWidthRatio,
+          size.y * NoahArkLayout.arkHeightRatio,
+        ),
       ),
     );
-    debugPrint("🌍 Ark added at ${Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio)}");
+    debugPrint(
+      "🌍 Ark added at ${Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio)}",
+    );
 
     // Noah — human character, larger than animals
-    await add(AnimalComponent(
-      config: kNoahConfig,
-      onTapped: (audioKey, _) {
-        final language = ref.read(localeProvider);
-        ref.read(audioProvider).playVerse(audioKey, language);
-        ref.read(gameStateProvider.notifier).placeAnimal(kNoahConfig.animalKey);
-      },
-      position: Vector2(size.x * 0.58, size.y * 0.42),
-      size: Vector2(
-        size.y * NoahArkLayout.noahHeightRatio * NoahArkLayout.noahAspectRatio,
-        size.y * NoahArkLayout.noahHeightRatio,
+    await add(
+      AnimalComponent(
+        config: kNoahConfig,
+        onTapped: (audioKey, _) {
+          final language = ref.read(localeProvider);
+          ref.read(audioProvider).playVerse(audioKey, language);
+          ref
+              .read(gameStateProvider.notifier)
+              .placeAnimal(kNoahConfig.animalKey);
+        },
+        position: Vector2(size.x * 0.58, size.y * 0.42),
+        size: Vector2(
+          size.y *
+              NoahArkLayout.noahHeightRatio *
+              NoahArkLayout.noahAspectRatio,
+          size.y * NoahArkLayout.noahHeightRatio,
+        ),
       ),
-    ));
+    );
 
     // Animals — uniform size, along the water edge at the ark's base
     final animalEntries = [
@@ -95,13 +114,13 @@ class NoahExteriorStormWorld extends FlameGame with RiverpodGameMixin {
           onTapped: (audioKey, _) {
             final language = ref.read(localeProvider);
             ref.read(audioProvider).playVerse(audioKey, language);
-            ref
-                .read(gameStateProvider.notifier)
-                .placeAnimal(config.animalKey);
+            ref.read(gameStateProvider.notifier).placeAnimal(config.animalKey);
           },
           position: position,
           size: Vector2(
-            size.y * NoahArkLayout.animalHeightRatio * NoahArkLayout.animalAspectRatio,
+            size.y *
+                NoahArkLayout.animalHeightRatio *
+                NoahArkLayout.animalAspectRatio,
             size.y * NoahArkLayout.animalHeightRatio,
           ),
         ),

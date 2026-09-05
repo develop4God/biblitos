@@ -48,13 +48,16 @@ Single source of truth for every architectural decision in Biblitos. Governs: pr
 
 Every `FlameGame` world uses `RiverpodGameMixin` and is hosted by `RiverpodAwareGameWidget` (not plain `GameWidget`). This gives the world a `ref` directly — no more manually threading a `ProviderContainer` through every World's constructor.
 
+**Constraint discovered during migration:** `flame_riverpod` only supports `ref.listen` inside a Component's `addToGameWidgetBuild` hook — calling it directly in `FlameGame.onLoad` throws (`ref.listen can only be used within the build method of a ConsumerWidget`). `ref.read` (one-shot) works fine in the World. For a World that needs to *react* to a provider changing (not just read it once), add a small invisible `Component` with `RiverpodComponentMixin` that listens and forwards via a plain callback — see `SkySyncComponent` in `lib/components/sky_sync_component.dart`. This is not a workaround-turned-hack: it's the officially supported shape (listen lives in a component), it still reports through a callback rather than mutating World state directly from inside the component, and it keeps the World as the thing that decides what a sky change *means* (background color).
+
 ```dart
-// ✅ World — RiverpodGameMixin gives it `ref` directly
+// ✅ World — RiverpodGameMixin gives it `ref` directly for one-shot reads
 class NoahExteriorStormWorld extends FlameGame with RiverpodGameMixin {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    ref.listen<bool>(skyProvider, (previous, isNight) { ... });
+    // Reactive listen must go through a Component — see SkySyncComponent.
+    await add(SkySyncComponent(onSkyChanged: (isNight) { ... }));
   }
 
   Future<void> _buildScene() async {

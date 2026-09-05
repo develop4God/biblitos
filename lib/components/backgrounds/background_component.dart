@@ -11,7 +11,7 @@ class BackgroundComponent extends SpriteComponent {
   @override
   Future<void> onLoad() async {
     final path = switch (type) {
-      BackgroundType.storm   => 'noah_ark/backgrounds/storm.png',
+      BackgroundType.storm => 'noah_ark/backgrounds/storm.png',
       BackgroundType.rainbow => 'noah_ark/backgrounds/rainbow.png',
     };
     sprite = await Sprite.load(path);
