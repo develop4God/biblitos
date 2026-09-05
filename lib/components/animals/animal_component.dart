@@ -1,19 +1,30 @@
 import 'package:biblitos/components/animals/animal_config.dart';
+import 'package:biblitos/components/animals/board_target.dart';
+import 'package:biblitos/components/animals/react_effect.dart';
 import 'package:biblitos/components/drag_debug_logger.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/foundation.dart';
 
-class AnimalComponent extends SpriteComponent
-    with TapCallbacks, DragCallbacks {
+class AnimalComponent extends SpriteComponent with TapCallbacks, DragCallbacks {
   final AnimalConfig config;
   final void Function(String audioKey, String reactAnimation) onTapped;
+
+  /// The three below are only used when [AnimalConfig.isDraggable] is true —
+  /// they define the "drag this animal onto the ark" objective. Noah (not
+  /// draggable-to-target) simply omits them.
+  final Vector2 Function()? getBoardTargetCenter;
+  final double? boardRadius;
+  final void Function()? onBoarded;
 
   AnimalComponent({
     required this.config,
     required this.onTapped,
     required Vector2 position,
     required Vector2 size,
+    this.getBoardTargetCenter,
+    this.boardRadius,
+    this.onBoarded,
   }) : super(position: position, size: size);
 
   @override
@@ -37,6 +48,22 @@ class AnimalComponent extends SpriteComponent
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
     logDropPositionRatio(config.animalKey, this);
+
+    if (config.isDraggable &&
+        getBoardTargetCenter != null &&
+        boardRadius != null &&
+        onBoarded != null &&
+        isWithinBoardRadius(
+          componentCenter: position + size / 2,
+          targetCenter: getBoardTargetCenter!(),
+          radius: boardRadius!,
+        )) {
+      playReactAnimation();
+      onBoarded!();
+    }
+  }
+
+  void playReactAnimation() {
+    add(reactEffectFor(config.reactAnimation));
   }
 }
-

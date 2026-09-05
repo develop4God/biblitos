@@ -37,8 +37,8 @@ void main() {
 
     tearDown(() => container.dispose());
 
-    test('can be instantiated with a ProviderContainer', () {
-      final world = NoahExteriorStormWorld(container: container);
+    test('can be instantiated', () {
+      final world = NoahExteriorStormWorld();
       expect(world, isNotNull);
     });
 

@@ -1,29 +1,25 @@
 import 'dart:async';
+import 'dart:math' show max;
 
 import 'package:biblitos/components/animals/animal_component.dart';
 import 'package:biblitos/components/animals/animal_config.dart';
 import 'package:biblitos/components/backgrounds/background_component.dart';
 import 'package:biblitos/components/props/ark_component.dart';
+import 'package:biblitos/components/sky_sync_component.dart';
 import 'package:biblitos/config/noah_ark_layout.dart';
 import 'package:biblitos/providers/audio_provider.dart';
 import 'package:biblitos/providers/game_state_provider.dart';
 import 'package:biblitos/providers/locale_provider.dart';
-import 'package:biblitos/providers/sky_provider.dart';
 import 'package:flame/game.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _daySkyColor = Color(0xFF87CEEB);
 const _nightSkyColor = Color(0xFF0B1026);
 
-class NoahExteriorStormWorld extends FlameGame {
-  final ProviderContainer _container;
+class NoahExteriorStormWorld extends FlameGame with RiverpodGameMixin {
   bool _sceneBuilt = false;
   Color _skyColor = _daySkyColor;
-  late final void Function() _stopSkyListener;
-
-  NoahExteriorStormWorld({required ProviderContainer container})
-    : _container = container;
 
   @override
   Color backgroundColor() => _skyColor;
@@ -31,18 +27,16 @@ class NoahExteriorStormWorld extends FlameGame {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    _skyColor = _container.read(skyProvider) ? _nightSkyColor : _daySkyColor;
-    final subscription = _container.listen<bool>(skyProvider, (previous, isNight) {
-      _skyColor = isNight ? _nightSkyColor : _daySkyColor;
-      debugPrint('🌗 world sky updated — isNight: $isNight, color: $_skyColor');
-    });
-    _stopSkyListener = subscription.close;
-  }
-
-  @override
-  void onRemove() {
-    _stopSkyListener();
-    super.onRemove();
+    await add(
+      SkySyncComponent(
+        onSkyChanged: (isNight) {
+          _skyColor = isNight ? _nightSkyColor : _daySkyColor;
+          debugPrint(
+            '🌗 world sky updated — isNight: $isNight, color: $_skyColor',
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -63,35 +57,50 @@ class NoahExteriorStormWorld extends FlameGame {
     // Background — full screen storm
     await add(BackgroundComponent(type: BackgroundType.storm, size: size));
 
-    // Ark — positioned from layout config
-    await add(
-      ArkComponent(
-        onTapped: () {
-          final language = _container.read(localeProvider);
-          _container.read(audioProvider).playVerse('noah_greeting', language);
-        },
-        position: Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio),
-        size: Vector2(size.x * NoahArkLayout.arkWidthRatio, size.y * NoahArkLayout.arkHeightRatio),
+    // Ark — positioned from layout config. Kept as a local reference so the
+    // animal boarding objective below can target its live position/size
+    // (the ark itself is draggable, so this must stay dynamic, not a
+    // one-time snapshot).
+    final ark = ArkComponent(
+      onTapped: () {
+        final language = ref.read(localeProvider);
+        ref.read(audioProvider).playVerse('noah_greeting', language);
+      },
+      position: Vector2(
+        size.x * NoahArkLayout.arkPosXRatio,
+        size.y * NoahArkLayout.arkPosYRatio,
+      ),
+      size: Vector2(
+        size.x * NoahArkLayout.arkWidthRatio,
+        size.y * NoahArkLayout.arkHeightRatio,
       ),
     );
-    debugPrint("🌍 Ark added at ${Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio)}");
+    await add(ark);
+    debugPrint('🌍 Ark added at ${ark.position}');
 
-    // Noah — human character, larger than animals
-    await add(AnimalComponent(
+    // Noah — human character, already at the ark door. He doesn't board
+    // anywhere, so a tap both plays his verse and marks him present; he
+    // also reacts when the child finishes boarding every animal.
+    final noah = AnimalComponent(
       config: kNoahConfig,
       onTapped: (audioKey, _) {
-        final language = _container.read(localeProvider);
-        _container.read(audioProvider).playVerse(audioKey, language);
-        _container.read(gameStateProvider.notifier).placeAnimal(kNoahConfig.animalKey);
+        final language = ref.read(localeProvider);
+        ref.read(audioProvider).playVerse(audioKey, language);
+        ref.read(gameStateProvider.notifier).placeAnimal(kNoahConfig.animalKey);
       },
       position: Vector2(size.x * 0.58, size.y * 0.42),
       size: Vector2(
         size.y * NoahArkLayout.noahHeightRatio * NoahArkLayout.noahAspectRatio,
         size.y * NoahArkLayout.noahHeightRatio,
       ),
-    ));
+    );
+    await add(noah);
 
-    // Animals — uniform size, along the water edge at the ark's base
+    // Animals — uniform size, along the water edge at the ark's base.
+    // Tapping an animal plays its verse (repeatable, no objective attached).
+    // Dragging it onto the ark is the actual game objective: that's what
+    // marks it placed, plays its reactAnimation, and — once every animal
+    // has boarded — makes Noah react to celebrate completion.
     final animalEntries = [
       (kLionConfig, Vector2(size.x * 0.30, size.y * 0.55)),
       (kElephantConfig, Vector2(size.x * 0.15, size.y * 0.60)),
@@ -105,17 +114,26 @@ class NoahExteriorStormWorld extends FlameGame {
         AnimalComponent(
           config: config,
           onTapped: (audioKey, _) {
-            final language = _container.read(localeProvider);
-            _container.read(audioProvider).playVerse(audioKey, language);
-            _container
-                .read(gameStateProvider.notifier)
-                .placeAnimal(config.animalKey);
+            final language = ref.read(localeProvider);
+            ref.read(audioProvider).playVerse(audioKey, language);
           },
           position: position,
           size: Vector2(
-            size.y * NoahArkLayout.animalHeightRatio * NoahArkLayout.animalAspectRatio,
+            size.y *
+                NoahArkLayout.animalHeightRatio *
+                NoahArkLayout.animalAspectRatio,
             size.y * NoahArkLayout.animalHeightRatio,
           ),
+          getBoardTargetCenter: () => ark.position + ark.size / 2,
+          boardRadius: max(ark.size.x, ark.size.y) * 0.5,
+          onBoarded: () {
+            ref.read(gameStateProvider.notifier).placeAnimal(config.animalKey);
+            ref.read(audioProvider).playSfx('boarded');
+            if (ref.read(gameStateProvider).allPlaced) {
+              noah.playReactAnimation();
+              ref.read(audioProvider).playSfx('all_aboard');
+            }
+          },
         ),
       );
     }

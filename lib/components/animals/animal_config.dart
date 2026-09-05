@@ -28,6 +28,7 @@ const kLionConfig = AnimalConfig(
   spritePath: 'noah_ark/characters/lion.png',
   reactAnimation: 'bounce',
   idleAnimation: 'idle',
+  isDraggable: true,
 );
 
 const kElephantConfig = AnimalConfig(
@@ -36,6 +37,7 @@ const kElephantConfig = AnimalConfig(
   spritePath: 'noah_ark/characters/elephant.png',
   reactAnimation: 'wiggle',
   idleAnimation: 'idle',
+  isDraggable: true,
 );
 
 const kGiraffeConfig = AnimalConfig(
@@ -44,6 +46,7 @@ const kGiraffeConfig = AnimalConfig(
   spritePath: 'noah_ark/characters/giraffe.png',
   reactAnimation: 'stretch',
   idleAnimation: 'idle',
+  isDraggable: true,
 );
 
 const kDoveConfig = AnimalConfig(
@@ -52,6 +55,7 @@ const kDoveConfig = AnimalConfig(
   spritePath: 'noah_ark/characters/dove.png',
   reactAnimation: 'fly',
   idleAnimation: 'idle',
+  isDraggable: true,
 );
 
 const kSheepConfig = AnimalConfig(
@@ -60,4 +64,5 @@ const kSheepConfig = AnimalConfig(
   spritePath: 'noah_ark/characters/sheep.png',
   reactAnimation: 'hop',
   idleAnimation: 'idle',
+  isDraggable: true,
 );
