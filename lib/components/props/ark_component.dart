@@ -1,3 +1,4 @@
+import 'package:biblitos/components/drag_debug_logger.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/foundation.dart';
@@ -30,6 +31,6 @@ class ArkComponent extends SpriteComponent
   @override
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
-    debugPrint('🧩 Ark dropped at $position');
+    logDropPositionRatio('Ark', this);
   }
 }

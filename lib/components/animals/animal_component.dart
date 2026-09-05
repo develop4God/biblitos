@@ -1,4 +1,5 @@
 import 'package:biblitos/components/animals/animal_config.dart';
+import 'package:biblitos/components/drag_debug_logger.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/foundation.dart';
@@ -35,7 +36,7 @@ class AnimalComponent extends SpriteComponent
   @override
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
-    debugPrint('🧩 ${config.animalKey} dropped at $position');
+    logDropPositionRatio(config.animalKey, this);
   }
 }
 
