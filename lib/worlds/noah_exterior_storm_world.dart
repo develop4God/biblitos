@@ -10,20 +10,15 @@ import 'package:biblitos/providers/game_state_provider.dart';
 import 'package:biblitos/providers/locale_provider.dart';
 import 'package:biblitos/providers/sky_provider.dart';
 import 'package:flame/game.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _daySkyColor = Color(0xFF87CEEB);
 const _nightSkyColor = Color(0xFF0B1026);
 
-class NoahExteriorStormWorld extends FlameGame {
-  final ProviderContainer _container;
+class NoahExteriorStormWorld extends FlameGame with RiverpodGameMixin {
   bool _sceneBuilt = false;
   Color _skyColor = _daySkyColor;
-  late final void Function() _stopSkyListener;
-
-  NoahExteriorStormWorld({required ProviderContainer container})
-    : _container = container;
 
   @override
   Color backgroundColor() => _skyColor;
@@ -31,18 +26,11 @@ class NoahExteriorStormWorld extends FlameGame {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    _skyColor = _container.read(skyProvider) ? _nightSkyColor : _daySkyColor;
-    final subscription = _container.listen<bool>(skyProvider, (previous, isNight) {
+    _skyColor = ref.read(skyProvider) ? _nightSkyColor : _daySkyColor;
+    ref.listen<bool>(skyProvider, (previous, isNight) {
       _skyColor = isNight ? _nightSkyColor : _daySkyColor;
       debugPrint('🌗 world sky updated — isNight: $isNight, color: $_skyColor');
     });
-    _stopSkyListener = subscription.close;
-  }
-
-  @override
-  void onRemove() {
-    _stopSkyListener();
-    super.onRemove();
   }
 
   @override
@@ -67,8 +55,8 @@ class NoahExteriorStormWorld extends FlameGame {
     await add(
       ArkComponent(
         onTapped: () {
-          final language = _container.read(localeProvider);
-          _container.read(audioProvider).playVerse('noah_greeting', language);
+          final language = ref.read(localeProvider);
+          ref.read(audioProvider).playVerse('noah_greeting', language);
         },
         position: Vector2(size.x * NoahArkLayout.arkPosXRatio, size.y * NoahArkLayout.arkPosYRatio),
         size: Vector2(size.x * NoahArkLayout.arkWidthRatio, size.y * NoahArkLayout.arkHeightRatio),
@@ -80,9 +68,9 @@ class NoahExteriorStormWorld extends FlameGame {
     await add(AnimalComponent(
       config: kNoahConfig,
       onTapped: (audioKey, _) {
-        final language = _container.read(localeProvider);
-        _container.read(audioProvider).playVerse(audioKey, language);
-        _container.read(gameStateProvider.notifier).placeAnimal(kNoahConfig.animalKey);
+        final language = ref.read(localeProvider);
+        ref.read(audioProvider).playVerse(audioKey, language);
+        ref.read(gameStateProvider.notifier).placeAnimal(kNoahConfig.animalKey);
       },
       position: Vector2(size.x * 0.58, size.y * 0.42),
       size: Vector2(
@@ -105,9 +93,9 @@ class NoahExteriorStormWorld extends FlameGame {
         AnimalComponent(
           config: config,
           onTapped: (audioKey, _) {
-            final language = _container.read(localeProvider);
-            _container.read(audioProvider).playVerse(audioKey, language);
-            _container
+            final language = ref.read(localeProvider);
+            ref.read(audioProvider).playVerse(audioKey, language);
+            ref
                 .read(gameStateProvider.notifier)
                 .placeAnimal(config.animalKey);
           },

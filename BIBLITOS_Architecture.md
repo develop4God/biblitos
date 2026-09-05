@@ -1,6 +1,6 @@
 # ⛵ Biblitos — Architecture Document
-**Version 2.1 — March 2026**  
-**Stack: Flutter + Flame + Riverpod**  
+**Version 3.0 — September 2026**  
+**Stack: Flutter + Flame + Riverpod + flame_riverpod**  
 **Status: Active Constitution — no .dart file is written without conforming to this document.**
 
 ---
@@ -24,6 +24,7 @@ Single source of truth for every architectural decision in Biblitos. Governs: pr
 | Asset Pipeline | pubspec.yaml declarations | — |
 | TTS Generation | Gemini 2.5 Pro (Python pipeline) | Pre-generated only |
 | Target | Android + iOS | — |
+| Riverpod-Flame Bridge | flame_riverpod | ^5.5.5 |
 
 ---
 
@@ -39,42 +40,74 @@ Single source of truth for every architectural decision in Biblitos. Governs: pr
 
 ---
 
-## 3. Callback Injection Pattern — The DIP Boundary
+## 3. Riverpod Boundary — Worlds Wire State, Components Stay Reviewed
 
-**This is the most critical architectural rule in Biblitos.**
+**Migrated in v3.0 (Sept 2026) from a hand-rolled `ProviderContainer`-threading pattern to the official `flame_riverpod` bridge.** This section documents the current contract and why it changed.
 
-Flame components must never import Riverpod. The boundary between game logic and state management is enforced via callback injection.
+### 3.1 Worlds — `RiverpodGameMixin`
+
+Every `FlameGame` world uses `RiverpodGameMixin` and is hosted by `RiverpodAwareGameWidget` (not plain `GameWidget`). This gives the world a `ref` directly — no more manually threading a `ProviderContainer` through every World's constructor.
 
 ```dart
-// ✅ CORRECT — component is pure game behavior
-class AnimalComponent extends SpriteComponent with TapCallbacks {
-  final AnimalConfig config;
-  final void Function(String audioKey, String reactAnimation) onTapped;
-
+// ✅ World — RiverpodGameMixin gives it `ref` directly
+class NoahExteriorStormWorld extends FlameGame with RiverpodGameMixin {
   @override
-  void onTapDown(TapDownEvent event) {
-    onTapped(config.audioKey, config.reactAnimation);  // fires callback only
+  Future<void> onLoad() async {
+    await super.onLoad();
+    ref.listen<bool>(skyProvider, (previous, isNight) { ... });
   }
-}
 
-// ✅ CORRECT — world owns ref and resolves providers
-AnimalComponent(
-  config: kLionConfig,
-  onTapped: (audioKey, animation) {
-    final language = ref.read(localeProvider);
-    ref.read(audioProvider).playVerse(audioKey, language);
-  },
-  position: Vector2(580, 560),
-  size: Vector2(150, 150),
-)
-
-// ❌ HARD BLOCK — ref leaking into component
-class AnimalComponent extends SpriteComponent with TapCallbacks {
-  final WidgetRef ref;  // NEVER
+  Future<void> _buildScene() async {
+    await add(AnimalComponent(
+      config: kLionConfig,
+      onTapped: (audioKey, animation) {
+        final language = ref.read(localeProvider);
+        ref.read(audioProvider).playVerse(audioKey, language);
+      },
+      position: Vector2(580, 560),
+      size: Vector2(150, 150),
+    ));
+  }
 }
 ```
 
-**Rule: Components own behavior. Worlds own state resolution. Never cross this boundary.**
+```dart
+// app.dart / game_canvas.dart — host with RiverpodAwareGameWidget, not GameWidget
+RiverpodAwareGameWidget(game: NoahExteriorStormWorld())
+```
+
+### 3.2 Components — callback-only by default, `RiverpodComponentMixin` only when a component needs reactive read state
+
+Components still default to pure callback injection — `AnimalComponent`, `ArkComponent`, and `BackgroundComponent` fire `onTapped` and take zero Riverpod imports today, because none of them currently need to reactively rebuild on provider changes. This is unchanged from v2.1 and remains the default for any new component.
+
+`RiverpodComponentMixin` is **allowed**, not blocked, the moment a component genuinely needs to *watch* provider state and react to it live (e.g. a future component whose idle animation must change immediately when `localeProvider` changes, without the World pushing state down manually). When that need appears:
+
+```dart
+// ✅ ALLOWED — component reacts to state, does not own it
+class SomeReactiveComponent extends PositionComponent with RiverpodComponentMixin {
+  @override
+  void onMount() {
+    addToGameWidgetBuild(() {
+      ref.listen(localeProvider, (previous, language) {
+        // update display only — never call services, never mutate providers here
+      });
+    });
+    super.onMount();
+  }
+}
+
+// ❌ STILL NOT ALLOWED — component performing a side effect / owning business logic
+class SomeComponent extends PositionComponent with RiverpodComponentMixin {
+  void onTapDown(TapDownEvent event) {
+    ref.read(audioProvider).playVerse(...);   // side effects belong in the World's callback, not here
+    ref.read(gameStateProvider.notifier).placeAnimal(...); // NEVER — this is business logic in a component
+  }
+}
+```
+
+**Rule going forward:** a component may `ref.watch`/`ref.listen` for **read-only reactive display state only**. Triggering side effects (audio, game-state mutation) from inside a component — instead of via the callback the World already resolves — is a review-rejected pattern, not a compiler error. This replaced the old hard compiler-style block (v2.1 Rule 4) now that every PR is reviewed against this document; see §11 Rule 4 for the updated wording.
+
+**Rule: Worlds own state resolution and side effects. Components may read for display, never to act.**
 
 ---
 
@@ -253,13 +286,29 @@ group('ProviderName', () {
 });
 ```
 
-### Test Pattern — Flame Components
+### Test Pattern — Flame Components (callback-only, the default)
 ```dart
 testWithFlameGame('describes expected behavior', (game) async {
   // arrange component with captured callback
   // add to game, await ready()
   // fire event
   // expect captured values
+});
+```
+
+### Test Pattern — Flame Components using `RiverpodComponentMixin`
+Only needed for a component that reactively watches a provider (§3.2). Requires a `ProviderContainer` with overrides, since the component now depends on provider state directly rather than a captured callback:
+```dart
+testWithFlameGame('reacts to provider state', (game) async {
+  final container = ProviderContainer(
+    overrides: [localeProvider.overrideWith(() => LocaleNotifier())],
+  );
+  addTearDown(container.dispose);
+
+  final component = SomeReactiveComponent();
+  await game.ensureAdd(component);
+  // mutate the provider via container, then assert the component's
+  // observable state (e.g. displayed text/animation) updated
 });
 ```
 
@@ -308,7 +357,7 @@ testWithFlameGame('describes expected behavior', (game) async {
 | 1 | `AudioService()` instantiated directly in a component |
 | 2 | Language string hardcoded in a component: `"en"` |
 | 3 | Asset path hardcoded in a component |
-| 4 | `WidgetRef` or any Riverpod import inside a Flame component |
+| 4 | A component using `ref` to trigger a side effect (audio, game-state mutation) instead of via its callback — `ref.watch`/`ref.listen` for read-only display state is allowed (see §3.2); this is a review rule, not a compiler block |
 | 5 | New provider added without registering in this document |
 | 6 | `AnimalComponent` modified to add a new animal |
 | 7 | `@riverpod` or `@freezed` changed without running build_runner |
@@ -331,6 +380,22 @@ testWithFlameGame('describes expected behavior', (game) async {
 | Experiment flags in analysis_options | `grep "enable-experiment" analysis_options.yaml` | "Do not touch analysis_options" in Ground Rules |
 | Duplicate pubspec entries | `flutter pub get` fails | "Edit dependencies section only" |
 | Wrong language array | Check `kSupportedLanguages` | Always specify exact array in block |
+
+---
+
+## 13. Child Interaction Constants — Ages 2–6 (Non-Negotiable)
+
+Biblitos's actual product risk isn't architectural — it's whether a 2-6 year old can use the app unassisted. These rules are as binding as the engineering rules above and apply to every World and Component that handles touch or feedback.
+
+| Rule | Constant | Rationale |
+|---|---|---|
+| Minimum tap target | 120×120 logical px | Toddler motor control is imprecise; smaller targets cause repeated missed taps and frustration |
+| Feedback latency | Audio + `reactAnimation` must both fire within the same frame the tap is registered | Delayed/split feedback reads as "broken" to a child this age; reward must feel instant |
+| No failure state | The app must never show an error, "wrong", or blocking dialog to the child | `gameStateProvider` already only tracks positive placement (`isPlaced`/`allPlaced`) with no fail path — keep it that way as new interactions are added |
+| No score/timer pressure | Never add point counters, countdowns, or lose conditions | Matches the Toca Boca model: engagement through open interaction, not competition |
+| Session pacing | Design each World's full interaction loop (all animals placed) to complete within ~8–10 minutes | Matches documented attention span for this age band |
+
+**Enforcement:** any new component or World PR is checked against this section the same way it's checked against §11's hard blocks — it's a review-checklist item, not a suggestion.
 
 ---
 
