@@ -4,8 +4,9 @@ const kSupportedLanguages = ['en', 'es', 'pt', 'fr'];
 const kDefaultLanguage = 'en';
 const kAudioBasePath = 'assets/audio/';
 
-class LocaleNotifier extends StateNotifier<String> {
-  LocaleNotifier() : super(kDefaultLanguage);
+class LocaleNotifier extends Notifier<String> {
+  @override
+  String build() => kDefaultLanguage;
 
   void setLanguage(String language) {
     if (kSupportedLanguages.contains(language)) {
@@ -18,6 +19,6 @@ class LocaleNotifier extends StateNotifier<String> {
   String buildSfxPath(String sfxKey) => '${kAudioBasePath}en/sfx/$sfxKey.mp3';
 }
 
-final localeProvider = StateNotifierProvider<LocaleNotifier, String>(
-  (ref) => LocaleNotifier(),
+final localeProvider = NotifierProvider<LocaleNotifier, String>(
+  LocaleNotifier.new,
 );

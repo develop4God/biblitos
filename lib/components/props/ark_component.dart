@@ -3,8 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/foundation.dart';
 
-class ArkComponent extends SpriteComponent
-    with TapCallbacks, DragCallbacks {
+class ArkComponent extends SpriteComponent with TapCallbacks, DragCallbacks {
   final void Function() onTapped;
 
   ArkComponent({

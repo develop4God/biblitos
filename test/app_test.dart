@@ -7,9 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('BiblitosApp — sky toggle', () {
     testWidgets('defaults to day and shows the moon icon', (tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(child: BiblitosApp()),
-      );
+      await tester.pumpWidget(const ProviderScope(child: BiblitosApp()));
       await tester.pump();
 
       expect(find.byIcon(Icons.nightlight_round), findsOneWidget);

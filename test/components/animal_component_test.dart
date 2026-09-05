@@ -1,9 +1,14 @@
 import 'package:biblitos/components/animals/animal_component.dart';
 import 'package:biblitos/components/animals/animal_config.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
+import 'package:flame_test/flame_test.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('AnimalComponent', () {
     test('stores config and onTapped callback', () {
       bool callbackWasCalled = false;
@@ -60,5 +65,70 @@ void main() {
         expect(animation, config.reactAnimation);
       }
     });
+
+    testWithFlameGame('onBoarded fires when dropped within the board radius', (
+      game,
+    ) async {
+      var boardedCalled = false;
+
+      final component = AnimalComponent(
+        config: kLionConfig,
+        onTapped: (_, _) {},
+        position: Vector2(100, 100),
+        size: Vector2(50, 50),
+        getBoardTargetCenter: () => Vector2(125, 125),
+        boardRadius: 100,
+        onBoarded: () => boardedCalled = true,
+      );
+      await game.ensureAdd(component);
+
+      component.onDragEnd(DragEndEvent(1, DragEndDetails()));
+
+      expect(boardedCalled, true);
+    });
+
+    testWithFlameGame(
+      'onBoarded does not fire when dropped outside the board radius',
+      (game) async {
+        var boardedCalled = false;
+
+        final component = AnimalComponent(
+          config: kLionConfig,
+          onTapped: (_, _) {},
+          position: Vector2(1000, 1000),
+          size: Vector2(50, 50),
+          getBoardTargetCenter: () => Vector2(125, 125),
+          boardRadius: 100,
+          onBoarded: () => boardedCalled = true,
+        );
+        await game.ensureAdd(component);
+
+        component.onDragEnd(DragEndEvent(1, DragEndDetails()));
+
+        expect(boardedCalled, false);
+      },
+    );
+
+    testWithFlameGame(
+      'a non-draggable-to-target animal (e.g. Noah) never fires onBoarded',
+      (game) async {
+        var boardedCalled = false;
+
+        final component = AnimalComponent(
+          config: kNoahConfig,
+          onTapped: (_, _) {},
+          position: Vector2(125, 125),
+          size: Vector2(50, 50),
+          getBoardTargetCenter: () => Vector2(125, 125),
+          boardRadius: 100,
+          onBoarded: () => boardedCalled = true,
+        );
+        await game.ensureAdd(component);
+
+        component.onDragEnd(DragEndEvent(1, DragEndDetails()));
+
+        expect(boardedCalled, false);
+      },
+    );
   });
 }
