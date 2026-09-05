@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 part 'game_state_provider.freezed.dart';
 
 @freezed
-class GameState with _$GameState {
+abstract class GameState with _$GameState {
   const factory GameState({@Default({}) Set<String> placedAnimals}) =
       _GameState;
 }

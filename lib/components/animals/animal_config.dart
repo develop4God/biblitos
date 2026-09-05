@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'animal_config.freezed.dart';
 
 @freezed
-class AnimalConfig with _$AnimalConfig {
+abstract class AnimalConfig with _$AnimalConfig {
   const factory AnimalConfig({
     required String animalKey,
     required String audioKey,
