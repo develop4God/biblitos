@@ -1,6 +1,7 @@
 import 'package:biblitos/components/animals/animal_component.dart';
 import 'package:biblitos/components/animals/animal_config.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame_test/flame_test.dart';
 import 'package:flutter/gestures.dart';
@@ -130,5 +131,99 @@ void main() {
         expect(boardedCalled, false);
       },
     );
+
+    testWithFlameGame('a draggable animal gets an idle effect and a hint '
+        'effect after load', (game) async {
+      final component = AnimalComponent(
+        config: kLionConfig,
+        onTapped: (_, _) {},
+        position: Vector2.zero(),
+        size: Vector2(100, 100),
+      );
+      await game.ensureAdd(component);
+
+      final effects = component.children.whereType<Effect>();
+      expect(effects.whereType<ScaleEffect>().length, 2);
+    });
+
+    testWithFlameGame(
+      'a non-draggable animal (Noah) gets an idle effect but no hint effect',
+      (game) async {
+        final component = AnimalComponent(
+          config: kNoahConfig,
+          onTapped: (_, _) {},
+          position: Vector2.zero(),
+          size: Vector2(100, 100),
+        );
+        await game.ensureAdd(component);
+
+        final effects = component.children.whereType<Effect>();
+        expect(effects.whereType<ScaleEffect>().length, 1);
+      },
+    );
+
+    testWithFlameGame(
+      'tapping an animal adds a tap-feedback effect and still fires onTapped',
+      (game) async {
+        bool callbackWasCalled = false;
+        late String capturedKey;
+        late String capturedAnimation;
+
+        final component = AnimalComponent(
+          config: kLionConfig,
+          onTapped: (key, animation) {
+            callbackWasCalled = true;
+            capturedKey = key;
+            capturedAnimation = animation;
+          },
+          position: Vector2.zero(),
+          size: Vector2(100, 100),
+        );
+        await game.ensureAdd(component);
+
+        final effectsBefore = component.children.whereType<Effect>().length;
+
+        component.onTapDown(
+          TapDownEvent(1, game, TapDownDetails(globalPosition: Offset.zero)),
+        );
+        game.update(0);
+
+        final effectsAfter = component.children.whereType<Effect>().length;
+
+        expect(effectsAfter, effectsBefore + 1);
+        expect(callbackWasCalled, true);
+        expect(capturedKey, 'lion_verse');
+        expect(capturedAnimation, 'bounce');
+      },
+    );
+
+    testWithFlameGame('the hint effect is removed after a successful board', (
+      game,
+    ) async {
+      final component = AnimalComponent(
+        config: kLionConfig,
+        onTapped: (_, _) {},
+        position: Vector2(100, 100),
+        size: Vector2(50, 50),
+        getBoardTargetCenter: () => Vector2(125, 125),
+        boardRadius: 100,
+        onBoarded: () {},
+      );
+      await game.ensureAdd(component);
+
+      final effectsBeforeBoard = component.children
+          .whereType<ScaleEffect>()
+          .toList();
+      expect(effectsBeforeBoard.length, 2);
+      final idleEffect = effectsBeforeBoard.first;
+      final hintEffect = effectsBeforeBoard.last;
+
+      component.onDragEnd(DragEndEvent(1, DragEndDetails()));
+      game.update(0);
+
+      final effectsAfterBoard = component.children.whereType<ScaleEffect>();
+      expect(effectsAfterBoard, contains(idleEffect));
+      expect(effectsAfterBoard, isNot(contains(hintEffect)));
+    });
   });
 }

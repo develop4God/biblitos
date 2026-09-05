@@ -1,8 +1,12 @@
 import 'package:biblitos/components/props/ark_component.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
+import 'package:flame_test/flame_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('ArkComponent', () {
     test('stores onTapped callback and fires it when invoked', () {
       bool callbackFired = false;
@@ -39,6 +43,21 @@ void main() {
       expect(component1.size, Vector2(200, 200));
       expect(component2.position, Vector2(100, 100));
       expect(component2.size, Vector2(150, 150));
+    });
+
+    testWithFlameGame('has an infinite rotate effect present after load', (
+      game,
+    ) async {
+      final component = ArkComponent(
+        onTapped: () {},
+        position: Vector2.zero(),
+        size: Vector2(200, 200),
+      );
+      await game.ensureAdd(component);
+
+      final rotateEffects = component.children.whereType<RotateEffect>();
+      expect(rotateEffects.length, 1);
+      expect(rotateEffects.first.controller.isInfinite, true);
     });
   });
 }
