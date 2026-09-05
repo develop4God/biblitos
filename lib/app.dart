@@ -4,12 +4,20 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BiblitosApp extends StatelessWidget {
+class BiblitosApp extends StatefulWidget {
   const BiblitosApp({super.key});
+
+  @override
+  State<BiblitosApp> createState() => _BiblitosAppState();
+}
+
+class _BiblitosAppState extends State<BiblitosApp> {
+  NoahExteriorStormWorld? _game;
 
   @override
   Widget build(BuildContext context) {
     final container = ProviderScope.containerOf(context);
+    _game ??= NoahExteriorStormWorld(container: container);
     debugPrint('🌍 BiblitosApp build — container acquired');
 
     return MaterialApp(
@@ -19,7 +27,12 @@ class BiblitosApp extends StatelessWidget {
       home: Scaffold(
         body: Stack(
           children: [
-            GameWidget(game: NoahExteriorStormWorld(container: container)),
+            Consumer(
+              builder: (context, ref, _) {
+                ref.watch(skyProvider);
+                return GameWidget(game: _game!);
+              },
+            ),
             const Positioned(top: 16, right: 16, child: _SkyToggleButton()),
           ],
         ),
@@ -38,7 +51,7 @@ class _SkyToggleButton extends ConsumerWidget {
       child: IconButton.filled(
         iconSize: 40,
         padding: const EdgeInsets.all(16),
-        icon: Icon(isNight ? Icons.nightlight_round : Icons.wb_sunny),
+        icon: Icon(isNight ? Icons.wb_sunny : Icons.nightlight_round),
         onPressed: () => ref.read(skyProvider.notifier).toggle(),
       ),
     );

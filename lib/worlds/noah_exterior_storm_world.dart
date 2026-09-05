@@ -34,6 +34,7 @@ class NoahExteriorStormWorld extends FlameGame {
     _skyColor = _container.read(skyProvider) ? _nightSkyColor : _daySkyColor;
     final subscription = _container.listen<bool>(skyProvider, (previous, isNight) {
       _skyColor = isNight ? _nightSkyColor : _daySkyColor;
+      debugPrint('🌗 world sky updated — isNight: $isNight, color: $_skyColor');
     });
     _stopSkyListener = subscription.close;
   }
@@ -94,7 +95,7 @@ class NoahExteriorStormWorld extends FlameGame {
     final animalEntries = [
       (kLionConfig, Vector2(size.x * 0.30, size.y * 0.55)),
       (kElephantConfig, Vector2(size.x * 0.15, size.y * 0.60)),
-      (kGiraffeConfig, Vector2(size.x * 0.47, size.y * 0.18)),
+      (kGiraffeConfig, Vector2(size.x * 0.44, size.y * 0.51)),
       (kDoveConfig, Vector2(size.x * 0.37, size.y * 0.0)),
       (kSheepConfig, Vector2(size.x * 0.82, size.y * 0.57)),
     ];
