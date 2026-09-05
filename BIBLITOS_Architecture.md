@@ -446,14 +446,14 @@ Layer 7 — Launch Polish  ⏳  icon, Firebase, Android + iOS export — not sta
 ```
 
 ### Gates
-- **Gate 1** — Ark visible on device → merge `feature/flame-foundation` to `main`
+- **Gate 1** — Ark visible on device → merge `feature/flame-foundation` to `main` ✅ **DONE** — `feature/flame-riverpod-migration` merged to `main` via PR #6 (`14dd667`); feature branch deleted post-merge
 - **Gate 2** — Child taps animal, hears Scripture → family test → App Store
 
 ### Last completed (this session)
-Migrated Riverpod↔Flame wiring to `flame_riverpod` (World-level `RiverpodGameMixin` + `SkySyncComponent` for reactive listens); added §13 Child Interaction Constants; added a `SessionStart` hook so Flutter/Dart auto-installs on every Claude Code web session; lowered `pubspec.yaml` sdk constraint to `^3.9.0` to allow stable-channel Flutter. Then found and fixed the actual product gap underneath all of that: dragging did nothing and there was no win state. Added §14 Core Game Loop — drag-to-board is now the real objective, with reaction animations (Flame `Effect` tweens, no new art needed) and a completion celebration. Still on `feature/flame-riverpod-migration` — **not yet merged to `main`** (all 44 tests pass on the branch; merge is pending).
+Merged `feature/flame-riverpod-migration` to `main` (PR #6) — Gate 1 is now satisfied. Ran the full quality-gate suite on `main`: `dart format` (0 changed), `dart analyze --fatal-infos` (0 issues), `dart fix --apply` (nothing to fix), `flutter test` (44/44 passing). Repo is clean; only `main` and the active session branch remain on the remote.
 
 ### Recommended next step
-Manual device/emulator verification of the new drag-to-board loop (tap → verse, drag onto ark → animation + sound + placement, all 6 → Noah celebrates) — this has only been verified via unit/widget tests in this environment, no real device available here. After that: rainbow world (Layer 4) is the next highest-leverage unblocked work, applying the same tap/drag pattern §14 now documents as the template. Layer 6 (Audio) is blocked on real audio assets regardless of any code work — the 'boarded'/'all_aboard' sfx keys are wired but silent until real files exist.
+Manual device/emulator verification of the drag-to-board loop (tap → verse, drag onto ark → animation + sound + placement, all 6 → Noah celebrates) is still outstanding — only verified via unit/widget tests so far, no real device available in this environment. After that: rainbow world (Layer 4) is the next highest-leverage unblocked work, applying the same tap/drag pattern §14 documents as the template. Layer 6 (Audio) remains blocked on real audio assets regardless of code work — the 'boarded'/'all_aboard' sfx keys are wired but silent until real files exist.
 
 ---
 
