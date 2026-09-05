@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SkyNotifier extends StateNotifier<bool> {
-  SkyNotifier() : super(false);
+class SkyNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
 
   void toggle() {
     state = !state;
@@ -10,6 +11,4 @@ class SkyNotifier extends StateNotifier<bool> {
   }
 }
 
-final skyProvider = StateNotifierProvider<SkyNotifier, bool>(
-  (ref) => SkyNotifier(),
-);
+final skyProvider = NotifierProvider<SkyNotifier, bool>(SkyNotifier.new);
