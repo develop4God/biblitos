@@ -17,6 +17,15 @@ class FakeAudioService implements AudioService {
   Future<void> play(String path) async => playedPaths.add(path);
 
   @override
+  Future<void> playDucked(String path) async => playedPaths.add(path);
+
+  @override
+  Future<void> playAmbient(String path) async {}
+
+  @override
+  Future<void> stopAmbient() async {}
+
+  @override
   Future<void> stop() async {}
 
   @override

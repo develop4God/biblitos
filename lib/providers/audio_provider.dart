@@ -7,10 +7,16 @@ final audioProvider = Provider<AudioService>((ref) {
   return service;
 });
 
+String ambientAssetPathFor(bool isNight) =>
+    'assets/audio/en/sfx/${isNight ? "ambient_night" : "ambient_day"}.mp3';
+
 extension AudioServiceX on AudioService {
   Future<void> playVerse(String audioKey, String language) =>
-      play('assets/audio/$language/$audioKey.mp3');
+      playDucked('assets/audio/$language/$audioKey.mp3');
 
   Future<void> playSfx(String sfxKey) =>
       play('assets/audio/en/sfx/$sfxKey.mp3');
+
+  Future<void> playAmbientForSky(bool isNight) =>
+      playAmbient(ambientAssetPathFor(isNight));
 }

@@ -34,6 +34,7 @@ class NoahExteriorStormWorld extends FlameGame with RiverpodGameMixin {
           debugPrint(
             '🌗 world sky updated — isNight: $isNight, color: $_skyColor',
           );
+          ref.read(audioProvider).playAmbientForSky(isNight);
         },
       ),
     );
