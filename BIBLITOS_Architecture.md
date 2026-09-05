@@ -394,7 +394,7 @@ Biblitos's actual product risk isn't architectural — it's whether a 2-6 year o
 | Rule | Constant | Rationale |
 |---|---|---|
 | Minimum tap target | 120×120 logical px | Toddler motor control is imprecise; smaller targets cause repeated missed taps and frustration |
-| Feedback latency | Audio + `reactAnimation` must both fire within the same frame the tap is registered | Delayed/split feedback reads as "broken" to a child this age; reward must feel instant |
+| Feedback latency | Every meaningful action (tap → verse audio; drag-drop onto a target → `reactAnimation` + boarding sound) must produce its response within the same frame the action completes | Delayed/split feedback reads as "broken" to a child this age; reward must feel instant |
 | No failure state | The app must never show an error, "wrong", or blocking dialog to the child | `gameStateProvider` already only tracks positive placement (`isPlaced`/`allPlaced`) with no fail path — keep it that way as new interactions are added |
 | No score/timer pressure | Never add point counters, countdowns, or lose conditions | Matches the Toca Boca model: engagement through open interaction, not competition |
 | Session pacing | Design each World's full interaction loop (all animals placed) to complete within ~8–10 minutes | Matches documented attention span for this age band |
@@ -403,7 +403,23 @@ Biblitos's actual product risk isn't architectural — it's whether a 2-6 year o
 
 ---
 
-## 14. Roadmap & Layer Status
+## 14. Core Game Loop — Tap-to-Hear, Drag-to-Board
+
+Earlier drafts of the storm world had a tap that both played audio and marked an animal "placed" — there was no actual objective, just labeled decoration. This section defines the real loop, now implemented in `NoahExteriorStormWorld`.
+
+**Two distinct interactions, not one:**
+1. **Tap an animal → plays its verse audio.** Repeatable at will, no state change, no cost. This is the Scripture-hearing mechanic (Gate 2) — a child can replay any animal's verse as many times as they want.
+2. **Drag an animal onto the ark → the actual game objective.** Dropping it within the ark's board radius (a generous, forgiving distance check — see `isWithinBoardRadius` in `board_target.dart` — never a precise hitbox, per §13's imprecise-motor-control rule) triggers, in order: the animal's `reactAnimation` (a Flame `Effect` — see `react_effect.dart` — since there are no sprite-sheet animations yet, these are transform tweens: scale/rotate/move), a "boarded" sound, and `gameStateProvider.placeAnimal(...)`. When the 6th animal boards, Noah plays his own `reactAnimation` and an "all_aboard" sound plays — the completion moment `gameStateProvider.allPlaced` always computed but was never surfaced to the child before this.
+
+**Why tap and drop are decoupled:** conflating "heard the verse" with "completed the objective" (the original design) meant there was no way to let a child replay a verse without also (mis)marking progress, and no way to give a real goal without blocking verse-replay. Splitting them gives both: infinite low-stakes replay (tap) and a real, single, forgiving objective (drag-to-ark).
+
+**Noah is the one exception** — he doesn't board anywhere (he's already at the ark door), so his tap still marks him placed directly, same as before. He also serves as the completion-celebration actor once every animal boards.
+
+This pattern — tap for repeatable Scripture-hearing, drag-to-target for the actual objective, with a visible completion moment — is the template for every future World, not something unique to the storm scene.
+
+---
+
+## 15. Roadmap & Layer Status
 
 Update this section at the end of every session — it is the in-repo source of truth for project state (mirrors, and takes precedence over, any external session-start tooling).
 
@@ -411,13 +427,21 @@ Update this section at the end of every session — it is the in-repo source of 
 Layer 1 — Foundation     ✅  pubspec, main.dart, app.dart, animal_config.dart
 Layer 2 — Providers      ✅  locale, audio, game_state, sky — provider tests passing
 Layer 3 — Components     ✅  AnimalComponent, ArkComponent, BackgroundComponent — tests passing
-Layer 4 — Worlds         ⏳  storm world done (drag/drop, sky toggle, flame_riverpod migrated)
+Layer 4 — Worlds         ⏳  storm world: real game loop now (§14) — tap-to-hear-verse,
+                                drag-to-board-the-ark with reactAnimation + boarding sound,
+                                completion celebration when all 6 board, sky toggle,
+                                flame_riverpod migrated
                               rainbow world — NOT started, but rainbow.png background asset exists,
-                                unblocked, buildable now by reusing AnimalComponent/ArkComponent
+                                unblocked, buildable now by reusing the same tap/drag pattern
                               interior world — NOT started, blocked: no interior background asset yet
-Layer 5 — Interactivity  ⏳  main_menu, drag_mechanics (partial — drag exists on Animal/Ark), language_button
+Layer 5 — Interactivity  ⏳  main_menu, language_button — not started
+                              drag_mechanics — DONE for storm world (§14's drag-to-board loop
+                                is the reference implementation for future Worlds)
 Layer 6 — Audio Pipeline ⏳  BLOCKED — assets/audio/{en,es,pt,fr}/ contain only .gitkeep placeholders,
-                              no real audio files yet; generate_audio.py pipeline not yet run
+                              no real audio files yet; generate_audio.py pipeline not yet run.
+                              Also needs 2 new sfx keys once real audio exists: 'boarded' and
+                              'all_aboard' (referenced in code today, silently no-op until
+                              real files land — see AudioService's caught-error behavior)
 Layer 7 — Launch Polish  ⏳  icon, Firebase, Android + iOS export — not started
 ```
 
@@ -426,10 +450,10 @@ Layer 7 — Launch Polish  ⏳  icon, Firebase, Android + iOS export — not sta
 - **Gate 2** — Child taps animal, hears Scripture → family test → App Store
 
 ### Last completed (this session)
-Migrated Riverpod↔Flame wiring to `flame_riverpod` (World-level `RiverpodGameMixin` + `SkySyncComponent` for reactive listens); added §13 Child Interaction Constants; added a `SessionStart` hook so Flutter/Dart auto-installs on every Claude Code web session; lowered `pubspec.yaml` sdk constraint to `^3.9.0` to allow stable-channel Flutter. Landed as PR #6 (`feature/flame-riverpod-migration` → `main`).
+Migrated Riverpod↔Flame wiring to `flame_riverpod` (World-level `RiverpodGameMixin` + `SkySyncComponent` for reactive listens); added §13 Child Interaction Constants; added a `SessionStart` hook so Flutter/Dart auto-installs on every Claude Code web session; lowered `pubspec.yaml` sdk constraint to `^3.9.0` to allow stable-channel Flutter. Then found and fixed the actual product gap underneath all of that: dragging did nothing and there was no win state. Added §14 Core Game Loop — drag-to-board is now the real objective, with reaction animations (Flame `Effect` tweens, no new art needed) and a completion celebration. Landed as PR #6 (`feature/flame-riverpod-migration` → `main`).
 
 ### Recommended next step
-Rainbow world (Layer 4) is the highest-leverage unblocked work — the background asset already exists and it's a near-direct reuse of `NoahExteriorStormWorld`'s component wiring, no new architecture needed. Layer 6 (Audio) is blocked on real audio assets regardless of any code work, so don't schedule interactivity work that depends on hearing verses (e.g. full Gate 2 validation) until that pipeline runs.
+Manual device/emulator verification of the new drag-to-board loop (tap → verse, drag onto ark → animation + sound + placement, all 6 → Noah celebrates) — this has only been verified via unit/widget tests in this environment, no real device available here. After that: rainbow world (Layer 4) is the next highest-leverage unblocked work, applying the same tap/drag pattern §14 now documents as the template. Layer 6 (Audio) is blocked on real audio assets regardless of any code work — the 'boarded'/'all_aboard' sfx keys are wired but silent until real files exist.
 
 ---
 
