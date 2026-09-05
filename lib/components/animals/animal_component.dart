@@ -1,14 +1,20 @@
 import 'package:biblitos/components/animals/animal_config.dart';
 import 'package:biblitos/components/animals/board_target.dart';
+import 'package:biblitos/components/animals/idle_effect.dart';
 import 'package:biblitos/components/animals/react_effect.dart';
+import 'package:biblitos/components/animals/tap_feedback_effect.dart';
 import 'package:biblitos/components/drag_debug_logger.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/foundation.dart';
 
 class AnimalComponent extends SpriteComponent with TapCallbacks, DragCallbacks {
   final AnimalConfig config;
   final void Function(String audioKey, String reactAnimation) onTapped;
+
+  int _tapCount = 0;
+  Effect? _hintEffect;
 
   /// The three below are only used when [AnimalConfig.isDraggable] is true —
   /// they define the "drag this animal onto the ark" objective. Noah (not
@@ -31,10 +37,17 @@ class AnimalComponent extends SpriteComponent with TapCallbacks, DragCallbacks {
   Future<void> onLoad() async {
     sprite = await Sprite.load(config.spritePath);
     debugPrint('🧩 ${config.animalKey} loaded — size: $size');
+
+    add(idleEffectFor(config.idleAnimation));
+    if (config.isDraggable) {
+      _hintEffect = idleEffectFor('hint');
+      add(_hintEffect!);
+    }
   }
 
   @override
   void onTapDown(TapDownEvent event) {
+    add(tapFeedbackEffectFor(_tapCount++));
     onTapped(config.audioKey, config.reactAnimation);
   }
 
@@ -58,6 +71,10 @@ class AnimalComponent extends SpriteComponent with TapCallbacks, DragCallbacks {
           targetCenter: getBoardTargetCenter!(),
           radius: boardRadius!,
         )) {
+      if (_hintEffect != null) {
+        _hintEffect!.removeFromParent();
+        _hintEffect = null;
+      }
       playReactAnimation();
       onBoarded!();
     }
