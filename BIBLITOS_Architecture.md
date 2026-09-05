@@ -345,7 +345,8 @@ testWithFlameGame('reacts to provider state', (game) async {
 - [ ] Test file created with N tests
 - [ ] dart analyze → 0 issues
 - [ ] flutter test → 0 failures
-- [ ] No Riverpod imports in Flame components
+- [ ] No component uses `ref` to trigger a side effect (§3.2) — read-only display state only
+- [ ] Any new/changed tap target and feedback timing follows §13 Child Interaction Constants
 - [ ] No files modified outside task scope
 ```
 
@@ -399,6 +400,36 @@ Biblitos's actual product risk isn't architectural — it's whether a 2-6 year o
 | Session pacing | Design each World's full interaction loop (all animals placed) to complete within ~8–10 minutes | Matches documented attention span for this age band |
 
 **Enforcement:** any new component or World PR is checked against this section the same way it's checked against §11's hard blocks — it's a review-checklist item, not a suggestion.
+
+---
+
+## 14. Roadmap & Layer Status
+
+Update this section at the end of every session — it is the in-repo source of truth for project state (mirrors, and takes precedence over, any external session-start tooling).
+
+```
+Layer 1 — Foundation     ✅  pubspec, main.dart, app.dart, animal_config.dart
+Layer 2 — Providers      ✅  locale, audio, game_state, sky — provider tests passing
+Layer 3 — Components     ✅  AnimalComponent, ArkComponent, BackgroundComponent — tests passing
+Layer 4 — Worlds         ⏳  storm world done (drag/drop, sky toggle, flame_riverpod migrated)
+                              rainbow world — NOT started, but rainbow.png background asset exists,
+                                unblocked, buildable now by reusing AnimalComponent/ArkComponent
+                              interior world — NOT started, blocked: no interior background asset yet
+Layer 5 — Interactivity  ⏳  main_menu, drag_mechanics (partial — drag exists on Animal/Ark), language_button
+Layer 6 — Audio Pipeline ⏳  BLOCKED — assets/audio/{en,es,pt,fr}/ contain only .gitkeep placeholders,
+                              no real audio files yet; generate_audio.py pipeline not yet run
+Layer 7 — Launch Polish  ⏳  icon, Firebase, Android + iOS export — not started
+```
+
+### Gates
+- **Gate 1** — Ark visible on device → merge `feature/flame-foundation` to `main`
+- **Gate 2** — Child taps animal, hears Scripture → family test → App Store
+
+### Last completed (this session)
+Migrated Riverpod↔Flame wiring to `flame_riverpod` (World-level `RiverpodGameMixin` + `SkySyncComponent` for reactive listens); added §13 Child Interaction Constants; added a `SessionStart` hook so Flutter/Dart auto-installs on every Claude Code web session; lowered `pubspec.yaml` sdk constraint to `^3.9.0` to allow stable-channel Flutter. Landed as PR #6 (`feature/flame-riverpod-migration` → `main`).
+
+### Recommended next step
+Rainbow world (Layer 4) is the highest-leverage unblocked work — the background asset already exists and it's a near-direct reuse of `NoahExteriorStormWorld`'s component wiring, no new architecture needed. Layer 6 (Audio) is blocked on real audio assets regardless of any code work, so don't schedule interactivity work that depends on hearing verses (e.g. full Gate 2 validation) until that pipeline runs.
 
 ---
 
